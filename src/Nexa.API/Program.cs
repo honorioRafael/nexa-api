@@ -1,6 +1,6 @@
+using Nexa.API.Extensions;
 using Nexa.Application;
 using Nexa.Infrastructure;
-using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,12 @@ builder.Services.AddControllers();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// OpenAPI (built-in .NET 10)
+// Project specific dependencies
+builder.Services.AddProjectDependencies();
+
+// Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
@@ -20,16 +25,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference(options =>
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
     {
-        options
-            .WithTitle("Nexa API")
-            .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient)
-            .AddPreferredSecuritySchemes("Bearer")
-            .AddHttpAuthentication("Bearer", auth =>
-            {
-                auth.Token = "your-jwt-token-here";
-            });
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Nexa API v1");
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
     });
 }
 

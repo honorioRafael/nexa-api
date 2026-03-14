@@ -1,4 +1,3 @@
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Nexa.Application.Interfaces.Services;
 using Nexa.Infrastructure.Authentication;
 using Nexa.Infrastructure.Persistence;
+using System.Text;
 
 namespace Nexa.Infrastructure;
 
