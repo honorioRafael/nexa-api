@@ -1,8 +1,8 @@
-using System.Security.Claims;
+using Nexa.Domain.Entities;
 
 namespace Nexa.Application.Interfaces.Services;
 
 public interface ITokenService
 {
-    string GenerateToken(IEnumerable<Claim> claims);
+    string GenerateToken(User user);
 }

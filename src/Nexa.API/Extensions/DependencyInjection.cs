@@ -22,6 +22,7 @@ public static class DependencyInjection
         services.AddTransient<IVehicleMaintenanceRepository, VehicleMaintenanceRepository>();
 
         // Services
+        services.AddTransient<IAuthenticateService, AuthenticateService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IEmployeeService, EmployeeService>();
         services.AddTransient<IHousingService, HousingService>();

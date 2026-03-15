@@ -10,10 +10,7 @@ namespace Nexa.API.Controllers;
 [Route("api/[controller]")]
 public class DriverController : BaseController<Driver, IDriverService>
 {
-
-    public DriverController(IDriverService driverService) : base(driverService)
-    {
-    }
+    public DriverController(IDriverService driverService) : base(driverService) { }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Get(long id)

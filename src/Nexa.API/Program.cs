@@ -15,19 +15,20 @@ builder.Services.AddProjectDependencies();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-   
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Insira o token JWT desta maneira: Bearer {seu token}",
+        Description = "Insira APENAS o seu token JWT aqui. O Swagger se encarregará de adicionar o 'Bearer ' nos headers.",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
     });
 
     c.AddSecurityRequirement(document => new OpenApiSecurityRequirement
     {
-       
+
         [new OpenApiSecuritySchemeReference("Bearer", document)] = []
     });
 });

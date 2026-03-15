@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Nexa.Domain.Entities;
 using Nexa.Domain.Interfaces.Repositories;
 using Nexa.Infrastructure.Persistence;
@@ -7,7 +8,10 @@ namespace Nexa.Infrastructure.Repositories;
 
 public class UserRepository : BaseRepository<User>, IUserRepository
 {
-    public UserRepository(AppDbContext context) : base(context)
+    public UserRepository(AppDbContext context) : base(context) { }
+
+    public async Task<User?> GetByEmail(string email)
     {
+        return await _dbSet.FirstOrDefaultAsync(x => x.Email == email);
     }
 }
