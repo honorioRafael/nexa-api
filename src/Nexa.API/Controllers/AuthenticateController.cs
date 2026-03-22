@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Nexa.Application.DTOs.Authenticate;
 using Nexa.Application.Interfaces.Services;
 

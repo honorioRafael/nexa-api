@@ -8,58 +8,141 @@ namespace Nexa.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class VehicleAllocationController : BaseController<VehicleAllocation, IVehicleAllocationService>
+public class VehicleAllocationController : BaseController<VehicleAllocation, IVehicleAllocationService, CreateVehicleAllocationDto, UpdateVehicleAllocationDto>
 {
 
     public VehicleAllocationController(IVehicleAllocationService vehicleAllocationService) : base(vehicleAllocationService)
     {
     }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(long id)
+    #region Get
+    [HttpGet("Get/{id}")]
+    public override async Task<IActionResult> Get(long id)
     {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
-        return Ok(new VehicleAllocationDto(entity.Id, entity.DriverId, entity.VehicleId, entity.StartDate, entity.EndDate));
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var entities = await _service.GetAllAsync();
-        return Ok(entities.Select(e => new VehicleAllocationDto(e.Id, e.DriverId, e.VehicleId, e.StartDate, e.EndDate)));
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateVehicleAllocationDto dto)
-    {
-        var entity = new VehicleAllocation
+        try
         {
-            DriverId = dto.DriverId,
-            VehicleId = dto.VehicleId,
-            StartDate = dto.StartDate,
-            EndDate = dto.EndDate
-        };
-        await _service.AddAsync(entity);
-        return CreatedAtAction(nameof(Get), new { id = entity.Id }, new VehicleAllocationDto(entity.Id, entity.DriverId, entity.VehicleId, entity.StartDate, entity.EndDate));
+            var entity = await _service.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+            return Ok(new VehicleAllocationDto(entity.Id, entity.DriverId, entity.VehicleId, entity.StartDate, entity.EndDate));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, UpdateVehicleAllocationDto dto)
+    [HttpGet("GetAll")]
+    public override async Task<IActionResult> GetAll()
     {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
-
-        entity.EndDate = dto.EndDate;
-
-        await _service.UpdateAsync(entity);
-        return NoContent();
+        try
+        {
+            var entities = await _service.GetAllAsync();
+            return Ok(entities.Select(e => new VehicleAllocationDto(e.Id, e.DriverId, e.VehicleId, e.StartDate, e.EndDate)));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+    #endregion
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(long id)
+    #region Create
+    [HttpPost("Create")]
+    public override async Task<IActionResult> Create(CreateVehicleAllocationDto dto)
     {
-        await _service.DeleteAsync(id);
-        return NoContent();
+        try
+        {
+            var entity = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(Get), new { id = entity.Id }, new VehicleAllocationDto(entity.Id, entity.DriverId, entity.VehicleId, entity.StartDate, entity.EndDate));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+
+    [HttpPost("CreateMultiple")]
+    public override async Task<IActionResult> CreateMultiple(List<CreateVehicleAllocationDto> dtos)
+    {
+        try
+        {
+            var entities = await _service.CreateMultipleAsync(dtos);
+            return Ok(entities.Select(e => new VehicleAllocationDto(e.Id, e.DriverId, e.VehicleId, e.StartDate, e.EndDate)));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
+
+    #region Update
+    [HttpPut("Update/{id}")]
+    public override async Task<IActionResult> Update(long id, UpdateVehicleAllocationDto dto)
+    {
+        try
+        {
+            await _service.UpdateAsync(id, dto);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("UpdateMultiple")]
+    public override async Task<IActionResult> UpdateMultiple(Dictionary<long, UpdateVehicleAllocationDto> idDtoPairs)
+    {
+        try
+        {
+            await _service.UpdateMultipleAsync(idDtoPairs);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
+
+    #region Delete
+    [HttpDelete("Delete/{id}")]
+    public override async Task<IActionResult> Delete(long id)
+    {
+        try
+        {
+            await _service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("DeleteMultiple")]
+    public override async Task<IActionResult> DeleteMultiple(List<long> listid)
+    {
+        try
+        {
+            await _service.DeleteMultipleAsync(listid);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
 }

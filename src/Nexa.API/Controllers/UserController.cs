@@ -8,57 +8,141 @@ namespace Nexa.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UserController : BaseController<User, IUserService>
+public class UserController : BaseController<User, IUserService, CreateUserDto, UpdateUserDto>
 {
 
     public UserController(IUserService userService) : base(userService)
     {
     }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(long id)
+    #region Get
+    [HttpGet("Get/{id}")]
+    public override async Task<IActionResult> Get(long id)
     {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
-        return Ok(new UserDto(entity.Id, entity.Email));
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var entities = await _service.GetAllAsync();
-        return Ok(entities.Select(e => new UserDto(e.Id, e.Email)));
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateUserDto dto)
-    {
-        var entity = new User
+        try
         {
-            Email = dto.Email,
-            Password = dto.Password
-        };
-        await _service.AddAsync(entity);
-        return CreatedAtAction(nameof(Get), new { id = entity.Id }, new UserDto(entity.Id, entity.Email));
+            var entity = await _service.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+            return Ok(new UserDto(entity.Id, entity.Email));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, UpdateUserDto dto)
+    [HttpGet("GetAll")]
+    public override async Task<IActionResult> GetAll()
     {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
-
-        entity.Email = dto.Email;
-        entity.Password = dto.Password;
-
-        await _service.UpdateAsync(entity);
-        return NoContent();
+        try
+        {
+            var entities = await _service.GetAllAsync();
+            return Ok(entities.Select(e => new UserDto(e.Id, e.Email)));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+    #endregion
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(long id)
+    #region Create
+    [HttpPost("Create")]
+    public override async Task<IActionResult> Create(CreateUserDto dto)
     {
-        await _service.DeleteAsync(id);
-        return NoContent();
+        try
+        {
+            var entity = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(Get), new { id = entity.Id }, new UserDto(entity.Id, entity.Email));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+
+    [HttpPost("CreateMultiple")]
+    public override async Task<IActionResult> CreateMultiple(List<CreateUserDto> dtos)
+    {
+        try
+        {
+            var entities = await _service.CreateMultipleAsync(dtos);
+            return Ok(entities.Select(e => new UserDto(e.Id, e.Email)));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
+
+    #region Update
+    [HttpPut("Update/{id}")]
+    public override async Task<IActionResult> Update(long id, UpdateUserDto dto)
+    {
+        try
+        {
+            await _service.UpdateAsync(id, dto);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("UpdateMultiple")]
+    public override async Task<IActionResult> UpdateMultiple(Dictionary<long, UpdateUserDto> idDtoPairs)
+    {
+        try
+        {
+            await _service.UpdateMultipleAsync(idDtoPairs);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
+
+    #region Delete
+    [HttpDelete("Delete/{id}")]
+    public override async Task<IActionResult> Delete(long id)
+    {
+        try
+        {
+            await _service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("DeleteMultiple")]
+    public override async Task<IActionResult> DeleteMultiple(List<long> listid)
+    {
+        try
+        {
+            await _service.DeleteMultipleAsync(listid);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
 }

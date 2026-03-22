@@ -2,12 +2,30 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.Domain.Interfaces.Repositories.Base;
 
-public interface IBaseRepository<T> where T : Entity
+public interface IBaseRepository<TEntity> where TEntity : Entity
 {
-    Task<T?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
-    Task<IEnumerable<T>> GetAllAsync(CancellationToken cancellationToken = default);
-    Task AddAsync(T entity, CancellationToken cancellationToken = default);
-    void Update(T entity);
-    void Delete(T entity);
+    #region Get
+    Task<TEntity?> GetByIdAsync(long id, CancellationToken cancellationToken = default);
+    Task<List<TEntity>> GetListByIdAsync(List<long> listId, CancellationToken cancellationToken = default);
+    Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken = default);
+    #endregion
+
+    #region Create
+    Task CreateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task CreateMultipleAsync(List<TEntity> entities, CancellationToken cancellationToken = default);
+    #endregion
+
+    #region Update
+    void Update(TEntity entity);
+    void UpdateMultiple(List<TEntity> entities);
+    #endregion
+
+    #region Delete
+    void Delete(TEntity entity);
+    void DeleteMultiple(List<TEntity> entities);
+    #endregion
+
+    #region SaveChanges
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    #endregion
 }

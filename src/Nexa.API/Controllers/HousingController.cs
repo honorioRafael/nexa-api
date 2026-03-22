@@ -8,67 +8,141 @@ namespace Nexa.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HousingController : BaseController<Housing, IHousingService>
+public class HousingController : BaseController<Housing, IHousingService, CreateHousingDto, UpdateHousingDto>
 {
 
     public HousingController(IHousingService housingService) : base(housingService)
     {
     }
-
-    [HttpGet("{id}")]
-    public async Task<IActionResult> Get(long id)
+    #region Get
+    [HttpGet("Get/{id}")]
+    public override async Task<IActionResult> Get(long id)
     {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
-        return Ok(new HousingDto(entity.Id, entity.Name, entity.Address, entity.City, entity.ZipCode, entity.MaxCapacity, entity.CurrentCapacity, entity.Status));
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> GetAll()
-    {
-        var entities = await _service.GetAllAsync();
-        return Ok(entities.Select(e => new HousingDto(e.Id, e.Name, e.Address, e.City, e.ZipCode, e.MaxCapacity, e.CurrentCapacity, e.Status)));
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Create(CreateHousingDto dto)
-    {
-        var entity = new Housing
+        try
         {
-            Name = dto.Name,
-            Address = dto.Address,
-            City = dto.City,
-            ZipCode = dto.ZipCode,
-            MaxCapacity = dto.MaxCapacity,
-            CurrentCapacity = dto.CurrentCapacity,
-            Status = dto.Status
-        };
-        await _service.AddAsync(entity);
-        return CreatedAtAction(nameof(Get), new { id = entity.Id }, new HousingDto(entity.Id, entity.Name, entity.Address, entity.City, entity.ZipCode, entity.MaxCapacity, entity.CurrentCapacity, entity.Status));
+            var entity = await _service.GetByIdAsync(id);
+            if (entity == null) return NotFound();
+            return Ok(new HousingDto(entity.Id, entity.Name, entity.Address, entity.City, entity.ZipCode, entity.MaxCapacity, entity.CurrentCapacity, entity.Status));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
-
-    [HttpPut("{id}")]
-    public async Task<IActionResult> Update(long id, UpdateHousingDto dto)
+    [HttpGet("GetAll")]
+    public override async Task<IActionResult> GetAll()
     {
-        var entity = await _service.GetByIdAsync(id);
-        if (entity == null) return NotFound();
-
-        entity.Name = dto.Name;
-        entity.Address = dto.Address;
-        entity.City = dto.City;
-        entity.ZipCode = dto.ZipCode;
-        entity.MaxCapacity = dto.MaxCapacity;
-        entity.CurrentCapacity = dto.CurrentCapacity;
-        entity.Status = dto.Status;
-
-        await _service.UpdateAsync(entity);
-        return NoContent();
+        try
+        {
+            var entities = await _service.GetAllAsync();
+            return Ok(entities.Select(e => new HousingDto(e.Id, e.Name, e.Address, e.City, e.ZipCode, e.MaxCapacity, e.CurrentCapacity, e.Status)));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+    #endregion
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(long id)
+    #region Create
+    [HttpPost("Create")]
+    public override async Task<IActionResult> Create(CreateHousingDto dto)
     {
-        await _service.DeleteAsync(id);
-        return NoContent();
+        try
+        {
+            var entity = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(Get), new { id = entity.Id }, new HousingDto(entity.Id, entity.Name, entity.Address, entity.City, entity.ZipCode, entity.MaxCapacity, entity.CurrentCapacity, entity.Status));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
+
+    [HttpPost("CreateMultiple")]
+    public override async Task<IActionResult> CreateMultiple(List<CreateHousingDto> dtos)
+    {
+        try
+        {
+            var entities = await _service.CreateMultipleAsync(dtos);
+            return Ok(entities.Select(e => new HousingDto(e.Id, e.Name, e.Address, e.City, e.ZipCode, e.MaxCapacity, e.CurrentCapacity, e.Status)));
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
+
+    #region Update
+    [HttpPut("Update/{id}")]
+    public override async Task<IActionResult> Update(long id, UpdateHousingDto dto)
+    {
+        try
+        {
+            await _service.UpdateAsync(id, dto);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpPut("UpdateMultiple")]
+    public override async Task<IActionResult> UpdateMultiple(Dictionary<long, UpdateHousingDto> idDtoPairs)
+    {
+        try
+        {
+            await _service.UpdateMultipleAsync(idDtoPairs);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
+
+    #region Delete
+    [HttpDelete("Delete/{id}")]
+    public override async Task<IActionResult> Delete(long id)
+    {
+        try
+        {
+            await _service.DeleteAsync(id);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+
+    [HttpDelete("DeleteMultiple")]
+    public override async Task<IActionResult> DeleteMultiple(List<long> listid)
+    {
+        try
+        {
+            await _service.DeleteMultipleAsync(listid);
+            return NoContent();
+        }
+        catch (KeyNotFoundException)
+        {
+            return NotFound();
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+    }
+    #endregion
 }
