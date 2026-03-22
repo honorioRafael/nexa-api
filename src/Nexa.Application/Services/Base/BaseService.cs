@@ -51,6 +51,9 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
         foreach (TCreateDto dto in listDto)
         {
             TEntity entity = new TEntity();
+
+            await OnEntityCreating(dto, cancellationToken);
+
             foreach (var data in listDtoPropertyInfo)
             {
                 data.EntityPropertyInfo.SetValue(entity, data.DtoPropertyInfo.GetValue(dto));
@@ -64,6 +67,8 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
 
         return listEntity;
     }
+
+    public virtual async Task OnEntityCreating(TCreateDto createDto, CancellationToken cancellationToken = default) { }
     #endregion
 
     #region Update
@@ -90,6 +95,9 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
         foreach (var dto in listDTO)
         {
             TEntity entity = listRelatedEntity.FirstOrDefault(x => x.Id == dto.Key) ?? throw new KeyNotFoundException($"{nameof(TEntity)} com Id {dto.Key} não encontrado(a).");
+
+            await OnEntityUpdating(dto.Key, dto.Value, cancellationToken);
+
             foreach (var data in listDtoPropertyInfo)
             {
                 data.EntityPropertyInfo.SetValue(entity, data.DtoPropertyInfo.GetValue(dto.Value));
@@ -101,6 +109,8 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
 
         return listRelatedEntity;
     }
+
+    public virtual async Task OnEntityUpdating(long id, TUpdateDto updateDTO, CancellationToken cancellationToken = default) { }
     #endregion
 
     #region Delete
