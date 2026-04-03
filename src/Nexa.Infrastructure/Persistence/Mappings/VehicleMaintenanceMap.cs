@@ -14,6 +14,8 @@ public class VehicleMaintenanceMap : IEntityTypeConfiguration<VehicleMaintenance
         builder.Property(x => x.Description).IsRequired().HasMaxLength(1000);
         builder.Property(x => x.StartDate).IsRequired();
         builder.Property(x => x.Cost).IsRequired().HasColumnType("decimal(18,2)");
+        builder.Property(x => x.LastReviewDate);
+        builder.Property(x => x.LastReviewMileage).HasColumnType("decimal(18,2)");
 
         builder.HasOne(x => x.Vehicle)
             .WithMany()

@@ -21,9 +21,12 @@ public static class DependencyInjection
         services.AddTransient<IVehicleRepository, VehicleRepository>();
         services.AddTransient<IDriverRepository, DriverRepository>();
         services.AddTransient<IHousingAllocationRepository, HousingAllocationRepository>();
-        services.AddTransient<IVehicleAllocationRepository, VehicleAllocationRepository>();
         services.AddTransient<IVehicleTripRepository, VehicleTripRepository>();
-        services.AddTransient<IVehicleMaintenanceRepository, VehicleMaintenanceRepository>();
+        services.AddTransient<IVehicleMaintenanceRepository, VehicleMaintenanceRepository>();        
+        services.AddTransient<IAddressRepository, AddressRepository>();
+        services.AddTransient<IHousingRoomRepository, HousingRoomRepository>();
+        services.AddTransient<IVehicleTripEmployeeRepository, VehicleTripEmployeeRepository>();
+        services.AddTransient<IVehicleTripStopRepository, VehicleTripStopRepository>();
 
         // Services
         services.AddTransient<IAuthenticateService, AuthenticateService>();
@@ -34,9 +37,12 @@ public static class DependencyInjection
         services.AddTransient<IVehicleService, VehicleService>();
         services.AddTransient<IDriverService, DriverService>();
         services.AddTransient<IHousingAllocationService, HousingAllocationService>();
-        services.AddTransient<IVehicleAllocationService, VehicleAllocationService>();
         services.AddTransient<IVehicleTripService, VehicleTripService>();
         services.AddTransient<IVehicleMaintenanceService, VehicleMaintenanceService>();
+        services.AddTransient<IAddressService, AddressService>();
+        services.AddTransient<IHousingRoomService, HousingRoomService>();
+        services.AddTransient<IVehicleTripEmployeeService, VehicleTripEmployeeService>();
+        services.AddTransient<IVehicleTripStopService, VehicleTripStopService>();
 
         return services;
     }

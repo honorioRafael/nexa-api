@@ -12,4 +12,6 @@ public class Vehicle : Entity
     public string ChassisNumber { get; set; } = string.Empty;
     public int Mileage { get; set; }
     public VehicleStatus Status { get; set; }
+    public VehicleCondition VehicleCondition { get; set; }
+    public string? OriginCountry { get; set; }
 }

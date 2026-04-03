@@ -1,0 +1,11 @@
+using Nexa.Domain.Entities;
+using Nexa.Domain.Interfaces.Repositories;
+using Nexa.Infrastructure.Persistence;
+using Nexa.Infrastructure.Repositories.Base;
+
+namespace Nexa.Infrastructure.Repositories;
+
+public class HousingRoomRepository : BaseRepository<HousingRoom>, IHousingRoomRepository
+{
+    public HousingRoomRepository(AppDbContext context) : base(context) { }
+}

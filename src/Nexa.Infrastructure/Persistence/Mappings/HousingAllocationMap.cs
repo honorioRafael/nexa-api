@@ -22,5 +22,10 @@ public class HousingAllocationMap : IEntityTypeConfiguration<HousingAllocation>
             .WithMany()
             .HasForeignKey(x => x.HousingId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.HousingRoom)
+            .WithMany()
+            .HasForeignKey(x => x.HousingRoomId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

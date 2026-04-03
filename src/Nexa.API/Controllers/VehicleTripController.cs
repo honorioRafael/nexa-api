@@ -13,5 +13,5 @@ public class VehicleTripController : BaseController<VehicleTrip, IVehicleTripSer
     public VehicleTripController(IVehicleTripService vehicleTripService) : base(vehicleTripService) { }
 
     protected override VehicleTripDto MapToDto(VehicleTrip entity) =>
-        new(entity.Id, entity.VehicleAllocationId, entity.Origin, entity.Destination, entity.StartDate, entity.EndDate, entity.Status, entity.Distance);
+        new(entity.Id, entity.DriverId, entity.VehicleId, entity.OriginAddressId, entity.DestinationAddressId, entity.StartDate, entity.EndDate, entity.Status, entity.Distance, entity.Description, entity.CurrentOcupation);
 }

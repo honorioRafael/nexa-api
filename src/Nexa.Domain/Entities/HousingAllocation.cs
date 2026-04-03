@@ -10,4 +10,7 @@ public class HousingAllocation : Entity
 
     public DateTime CheckInDate { get; set; }
     public DateTime? CheckOutDate { get; set; }
+
+    public long? HousingRoomId { get; set; }
+    public HousingRoom? HousingRoom { get; set; }
 }

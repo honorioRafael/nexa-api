@@ -9,4 +9,6 @@ public class VehicleMaintenance : Entity
     public DateTime StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public decimal Cost { get; set; }
+    public DateTime? LastReviewDate { get; set; }
+    public decimal? LastReviewMileage { get; set; }
 }
