@@ -1,3 +1,4 @@
+using ErrorOr;
 using Nexa.Application.Interfaces.Services.Base;
 using Nexa.Domain.Entities;
 using Nexa.Domain.Interfaces.Repositories.Base;
@@ -17,9 +18,13 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
     }
 
     #region Get
-    public virtual async Task<TEntity?> GetByIdAsync(long id, CancellationToken cancellationToken = default)
+    public virtual async Task<ErrorOr<TEntity>> GetByIdAsync(long id, CancellationToken cancellationToken = default)
     {
-        return await _repository.GetByIdAsync(id, cancellationToken);
+        var entity = await _repository.GetByIdAsync(id, cancellationToken);
+        if (entity is null)
+            return Error.NotFound(description: $"{typeof(TEntity).Name} com Id {id} não encontrado(a).");
+
+        return entity;
     }
 
     public virtual async Task<List<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -29,13 +34,14 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
     #endregion
 
     #region Create
-    public virtual async Task<TEntity> CreateAsync(TCreateDto dto, CancellationToken cancellationToken = default)
+    public virtual async Task<ErrorOr<TEntity>> CreateAsync(TCreateDto dto, CancellationToken cancellationToken = default)
     {
         var result = await CreateMultipleAsync([dto], cancellationToken);
-        return result.First();
+        if (result.IsError) return result.Errors;
+        return result.Value.First();
     }
 
-    public virtual async Task<List<TEntity>> CreateMultipleAsync(List<TCreateDto> listDto, CancellationToken cancellationToken = default)
+    public virtual async Task<ErrorOr<List<TEntity>>> CreateMultipleAsync(List<TCreateDto> listDto, CancellationToken cancellationToken = default)
     {
         List<PropertyInfo> listEntityPropertyInfo = typeof(TEntity).GetProperties().ToList();
         var listDtoPropertyInfo = (from i in typeof(TCreateDto).GetProperties()
@@ -47,13 +53,13 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
                                        EntityPropertyInfo = entityPropertyInfo
                                    }).ToList();
 
-        List<TEntity> listEntity = new List<TEntity>();
+        List<TEntity> listEntity = new();
         foreach (TCreateDto dto in listDto)
         {
-            TEntity entity = new TEntity();
+            var onCreatingResult = await OnEntityCreating(dto, cancellationToken);
+            if (onCreatingResult.IsError) return onCreatingResult.Errors;
 
-            await OnEntityCreating(dto, cancellationToken);
-
+            TEntity entity = new();
             foreach (var data in listDtoPropertyInfo)
             {
                 data.EntityPropertyInfo.SetValue(entity, data.DtoPropertyInfo.GetValue(dto));
@@ -63,22 +69,17 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
         }
 
         await _repository.CreateMultipleAsync(listEntity, cancellationToken);
-        await _repository.SaveChangesAsync();
+        await _repository.SaveChangesAsync(cancellationToken);
 
         return listEntity;
     }
 
-    public virtual async Task OnEntityCreating(TCreateDto createDto, CancellationToken cancellationToken = default) { }
+    public virtual Task<ErrorOr<Success>> OnEntityCreating(TCreateDto createDto, CancellationToken cancellationToken = default)
+        => Task.FromResult<ErrorOr<Success>>(Result.Success);
     #endregion
 
     #region Update
-    public virtual async Task<TEntity> UpdateAsync(long id, TUpdateDto dto, CancellationToken cancellationToken = default)
-    {
-        var result = await UpdateMultipleAsync(new Dictionary<long, TUpdateDto> { { id, dto } }, cancellationToken);
-        return result.First();
-    }
-
-    public virtual async Task<List<TEntity>> UpdateMultipleAsync(Dictionary<long, TUpdateDto> listDTO, CancellationToken cancellationToken = default)
+    public virtual async Task<ErrorOr<TEntity>> UpdateAsync(long id, TUpdateDto dto, CancellationToken cancellationToken = default)
     {
         List<PropertyInfo> listEntityPropertyInfo = typeof(TEntity).GetProperties().ToList();
         var listDtoPropertyInfo = (from i in typeof(TUpdateDto).GetProperties()
@@ -90,47 +91,50 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
                                        EntityPropertyInfo = entityPropertyInfo
                                    }).ToList();
 
-        List<TEntity> listRelatedEntity = await _repository.GetListByIdAsync(listDTO.Keys.ToList(), cancellationToken);
+        TEntity? entity = await _repository.GetByIdAsync(id, cancellationToken);
+        if (entity is null)
+            return Error.NotFound(description: $"{typeof(TEntity).Name} com Id {id} não encontrado(a).");
 
-        foreach (var dto in listDTO)
+        var onUpdatingResult = await OnEntityUpdating(id, dto, cancellationToken);
+        if (onUpdatingResult.IsError) return onUpdatingResult.Errors;
+
+        foreach (var data in listDtoPropertyInfo)
         {
-            TEntity entity = listRelatedEntity.FirstOrDefault(x => x.Id == dto.Key) ?? throw new KeyNotFoundException($"{nameof(TEntity)} com Id {dto.Key} não encontrado(a).");
-
-            await OnEntityUpdating(dto.Key, dto.Value, cancellationToken);
-
-            foreach (var data in listDtoPropertyInfo)
-            {
-                data.EntityPropertyInfo.SetValue(entity, data.DtoPropertyInfo.GetValue(dto.Value));
-            }
+            data.EntityPropertyInfo.SetValue(entity, data.DtoPropertyInfo.GetValue(dto));
         }
 
-        _repository.UpdateMultiple(listRelatedEntity);
-        await _repository.SaveChangesAsync();
+        _repository.Update(entity);
+        await _repository.SaveChangesAsync(cancellationToken);
 
-        return listRelatedEntity;
+        return entity;
     }
 
-    public virtual async Task OnEntityUpdating(long id, TUpdateDto updateDTO, CancellationToken cancellationToken = default) { }
+    public virtual Task<ErrorOr<Success>> OnEntityUpdating(long id, TUpdateDto updateDTO, CancellationToken cancellationToken = default)
+        => Task.FromResult<ErrorOr<Success>>(Result.Success);
     #endregion
 
     #region Delete
-    public virtual async Task DeleteAsync(long id, CancellationToken cancellationToken = default)
+    public virtual async Task<ErrorOr<Deleted>> DeleteAsync(long id, CancellationToken cancellationToken = default)
     {
-        await DeleteMultipleAsync([id], cancellationToken);
+        var result = await DeleteMultipleAsync([id], cancellationToken);
+        if (result.IsError) return result.Errors;
+        return Result.Deleted;
     }
 
-    public virtual async Task DeleteMultipleAsync(List<long> listId, CancellationToken cancellationToken = default)
+    public virtual async Task<ErrorOr<Deleted>> DeleteMultipleAsync(List<long> listId, CancellationToken cancellationToken = default)
     {
         List<TEntity> listEntity = await _repository.GetListByIdAsync(listId, cancellationToken);
 
         foreach (var id in listId)
         {
             if (!listEntity.Any(x => x.Id == id))
-                throw new KeyNotFoundException($"{typeof(TEntity).Name} com Id {id} não encontrado(a).");
+                return Error.NotFound(description: $"{typeof(TEntity).Name} com Id {id} não encontrado(a).");
         }
 
         _repository.DeleteMultiple(listEntity);
         await _repository.SaveChangesAsync(cancellationToken);
+
+        return Result.Deleted;
     }
     #endregion
 }

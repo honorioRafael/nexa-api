@@ -1,11 +1,15 @@
 using Microsoft.OpenApi;
 using Nexa.API.Extensions;
+using Nexa.API.Filters;
 using Nexa.Application;
 using Nexa.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ValidationFilter>();
+});
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);

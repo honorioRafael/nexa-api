@@ -1,5 +1,7 @@
+using FluentValidation;
 using Nexa.Application.Interfaces.Services;
 using Nexa.Application.Services;
+using Nexa.Application.Validators.User;
 using Nexa.Domain.Interfaces.Repositories;
 using Nexa.Infrastructure.Repositories;
 
@@ -9,6 +11,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddProjectDependencies(this IServiceCollection services)
     {
+        services.AddValidatorsFromAssemblyContaining<CreateUserValidator>();
+
         // Repositories
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IEmployeeRepository, EmployeeRepository>();
