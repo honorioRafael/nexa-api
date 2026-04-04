@@ -15,7 +15,7 @@ public class EmployeeMap : IEntityTypeConfiguration<Employee>
         builder.Property(x => x.Cpf).IsRequired().HasMaxLength(14);
         builder.Property(x => x.Role).IsRequired().HasMaxLength(100);
         builder.Property(x => x.PhoneNumber).HasMaxLength(20);
-        builder.Property(x => x.Status).IsRequired().HasConversion<string>();
+        builder.Property(x => x.Status).IsRequired().HasConversion<int>();
 
         builder.HasOne(x => x.User)
             .WithMany()

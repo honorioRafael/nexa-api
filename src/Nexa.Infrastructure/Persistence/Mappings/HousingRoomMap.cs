@@ -14,7 +14,7 @@ public class HousingRoomMap : IEntityTypeConfiguration<HousingRoom>
         builder.Property(x => x.Name).IsRequired().HasMaxLength(255);
         builder.Property(x => x.Description).HasMaxLength(500);
         builder.Property(x => x.Capacity).IsRequired();
-        builder.Property(x => x.HousingRoomType).IsRequired().HasConversion<string>();
+        builder.Property(x => x.HousingRoomType).IsRequired().HasConversion<int>();
 
         builder.HasOne(x => x.Housing)
             .WithMany()

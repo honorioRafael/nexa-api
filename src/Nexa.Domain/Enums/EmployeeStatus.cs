@@ -2,7 +2,7 @@ namespace Nexa.Domain.Enums;
 
 public enum EmployeeStatus
 {
-    Active,
-    OnVacation,
-    Dismissed
+    Active = 1,
+    OnVacation = 2,
+    Dismissed = 3
 }

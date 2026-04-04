@@ -2,7 +2,7 @@ namespace Nexa.Domain.Enums;
 
 public enum VehicleTripStatus
 {
-    Completed,
-    InProgress,
-    AwaitingDriver
+    Completed = 1,
+    InProgress = 2,
+    AwaitingDriver = 3
 }

@@ -13,7 +13,7 @@ public class VehicleTripMap : IEntityTypeConfiguration<VehicleTrip>
 
         builder.Property(x => x.StartDate).IsRequired();
         builder.Property(x => x.Distance).IsRequired();
-        builder.Property(x => x.Status).IsRequired().HasConversion<string>();
+        builder.Property(x => x.Status).IsRequired().HasConversion<int>();
 
         builder.Property(x => x.Description).HasMaxLength(500);
         builder.Property(x => x.CurrentOcupation).IsRequired();

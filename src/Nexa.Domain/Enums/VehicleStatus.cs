@@ -2,6 +2,6 @@ namespace Nexa.Domain.Enums;
 
 public enum VehicleStatus
 {
-    InUse,
-    Available
+    InUse = 1,
+    Available = 2
 }

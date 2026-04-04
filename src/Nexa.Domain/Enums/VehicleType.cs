@@ -2,8 +2,8 @@ namespace Nexa.Domain.Enums;
 
 public enum VehicleType
 {
-    Truck,
-    Van,
-    Car,
-    Pickup
+    Truck = 1,
+    Van = 2,
+    Car = 3,
+    Pickup = 4
 }

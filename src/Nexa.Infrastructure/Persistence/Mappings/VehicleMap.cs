@@ -14,8 +14,8 @@ public class VehicleMap : IEntityTypeConfiguration<Vehicle>
         builder.Property(x => x.LicensePlate).IsRequired().HasMaxLength(20);
         builder.Property(x => x.ChassisNumber).IsRequired().HasMaxLength(100);
         builder.Property(x => x.Mileage).IsRequired();
-        builder.Property(x => x.Status).IsRequired().HasConversion<string>();
-        builder.Property(x => x.VehicleCondition).IsRequired().HasConversion<string>();
+        builder.Property(x => x.Status).IsRequired().HasConversion<int>();
+        builder.Property(x => x.VehicleCondition).IsRequired().HasConversion<int>();
         builder.Property(x => x.OriginCountry).HasMaxLength(100);
 
         builder.HasOne(x => x.VehicleModel)

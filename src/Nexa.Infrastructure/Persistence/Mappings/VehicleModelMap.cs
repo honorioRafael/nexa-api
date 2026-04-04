@@ -14,7 +14,7 @@ public class VehicleModelMap : IEntityTypeConfiguration<VehicleModel>
         builder.Property(x => x.Manufacturer).IsRequired().HasMaxLength(255);
         builder.Property(x => x.Year).IsRequired();
         builder.Property(x => x.MaxCapacity).IsRequired();
-        builder.Property(x => x.Type).IsRequired().HasConversion<string>();
-        builder.Property(x => x.FuelType).IsRequired().HasConversion<string>();
+        builder.Property(x => x.Type).IsRequired().HasConversion<int>();
+        builder.Property(x => x.FuelType).IsRequired().HasConversion<int>();
     }
 }
