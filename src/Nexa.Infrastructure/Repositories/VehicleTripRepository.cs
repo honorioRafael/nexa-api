@@ -15,6 +15,9 @@ public class VehicleTripRepository : BaseRepository<VehicleTrip>, IVehicleTripRe
         return await _dbSet
             .AsNoTracking()
             .Where(x => x.VehicleId == vehicleId)
+            .Include(x => x.Vehicle)
+            .Include(x => x.OriginAddress)
+            .Include(x => x.DestinationAddress)
             .Include(x => x.ListVehicleTripEmployee)
                 .ThenInclude(vte => vte.Employee)
             .Include(x => x.ListVehicleTripStop)
