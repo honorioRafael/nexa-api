@@ -12,9 +12,9 @@ public class VehicleTripEmployeeMap : IEntityTypeConfiguration<VehicleTripEmploy
         builder.HasKey(x => x.Id);
 
         builder.HasOne(x => x.VehicleTrip)
-            .WithMany()
+            .WithMany(x => x.ListVehicleTripEmployee)
             .HasForeignKey(x => x.VehicleTripId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Employee)
             .WithMany()

@@ -12,6 +12,5 @@ public class VehicleModelController : BaseController<VehicleModel, IVehicleModel
 {
     public VehicleModelController(IVehicleModelService vehicleModelService) : base(vehicleModelService) { }
 
-    protected override VehicleModelDto MapToDto(VehicleModel entity) =>
-        new(entity.Id, entity.Manufacturer, entity.Type, entity.Year, entity.FuelType, entity.MaxCapacity);
+
 }

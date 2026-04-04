@@ -12,6 +12,5 @@ public class DriverController : BaseController<Driver, IDriverService, DriverDto
 {
     public DriverController(IDriverService driverService) : base(driverService) { }
 
-    protected override DriverDto MapToDto(Driver entity) =>
-        new(entity.Id, entity.UserId, entity.LicenseNumber, entity.LicenseExpiration, entity.LicenseType, entity.VehicleId);
+
 }

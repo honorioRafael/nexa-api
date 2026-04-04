@@ -12,6 +12,5 @@ public class VehicleTripEmployeeController : BaseController<VehicleTripEmployee,
 {
     public VehicleTripEmployeeController(IVehicleTripEmployeeService service) : base(service) { }
 
-    protected override VehicleTripEmployeeDto MapToDto(VehicleTripEmployee entity) =>
-        new(entity.Id, entity.VehicleTripId, entity.EmployeeId);
+
 }

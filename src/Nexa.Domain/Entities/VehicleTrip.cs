@@ -19,4 +19,7 @@ public class VehicleTrip : Entity
 
     public string Description { get; set; } = string.Empty;
     public int CurrentOcupation { get; set; }
+
+    public List<VehicleTripEmployee> ListVehicleTripEmployee { get; set; } = new();
+    public List<VehicleTripStop> ListVehicleTripStop { get; set; } = new();
 }

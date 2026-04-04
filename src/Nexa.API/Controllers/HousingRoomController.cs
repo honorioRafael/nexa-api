@@ -12,6 +12,5 @@ public class HousingRoomController : BaseController<HousingRoom, IHousingRoomSer
 {
     public HousingRoomController(IHousingRoomService service) : base(service) { }
 
-    protected override HousingRoomDto MapToDto(HousingRoom entity) =>
-        new(entity.Id, entity.HousingId, entity.Name, entity.Description, entity.Capacity, entity.HousingRoomType);
+
 }

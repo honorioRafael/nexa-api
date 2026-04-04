@@ -12,6 +12,5 @@ public class AddressController : BaseController<Address, IAddressService, Addres
 {
     public AddressController(IAddressService service) : base(service) { }
 
-    protected override AddressDto MapToDto(Address entity) =>
-        new(entity.Id, entity.Name, entity.Street, entity.Number, entity.Complement, entity.Neighborhood, entity.City, entity.State, entity.Country, entity.ZipCode);
+
 }

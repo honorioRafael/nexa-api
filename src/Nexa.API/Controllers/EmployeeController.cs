@@ -12,6 +12,5 @@ public class EmployeeController : BaseController<Employee, IEmployeeService, Emp
 {
     public EmployeeController(IEmployeeService employeeService) : base(employeeService) { }
 
-    protected override EmployeeDto MapToDto(Employee entity) =>
-        new(entity.Id, entity.UserId, entity.Name, entity.Cpf, entity.Role, entity.PhoneNumber, entity.HireDate, entity.Status, entity.HousingId);
+
 }

@@ -12,6 +12,5 @@ public class VehicleTripStopController : BaseController<VehicleTripStop, IVehicl
 {
     public VehicleTripStopController(IVehicleTripStopService service) : base(service) { }
 
-    protected override VehicleTripStopDto MapToDto(VehicleTripStop entity) =>
-        new(entity.Id, entity.VehicleTripId, entity.Description, entity.AddressId, entity.QueuePosition);
+
 }

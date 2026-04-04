@@ -12,6 +12,5 @@ public class UserController : BaseController<User, IUserService, UserDto, Create
 {
     public UserController(IUserService userService) : base(userService) { }
 
-    protected override UserDto MapToDto(User entity) =>
-        new(entity.Id, entity.Email);
+
 }

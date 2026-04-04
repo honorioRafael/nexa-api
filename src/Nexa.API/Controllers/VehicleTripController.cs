@@ -12,6 +12,13 @@ public class VehicleTripController : BaseController<VehicleTrip, IVehicleTripSer
 {
     public VehicleTripController(IVehicleTripService vehicleTripService) : base(vehicleTripService) { }
 
-    protected override VehicleTripDto MapToDto(VehicleTrip entity) =>
-        new(entity.Id, entity.DriverId, entity.VehicleId, entity.OriginAddressId, entity.DestinationAddressId, entity.StartDate, entity.EndDate, entity.Status, entity.Distance, entity.Description, entity.CurrentOcupation);
+
+    [HttpGet("GetLastByVehicleId/{vehicleId}")]
+    public virtual async Task<IActionResult> GetLastByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken)
+    {
+        var result = await _service.GetLastByVehicleIdAsync(vehicleId, cancellationToken);
+        return result.Match(
+            entity => Ok(MapToDto(entity)),
+            HandleErrors);
+    }
 }

@@ -20,7 +20,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
         _service = service;
     }
 
-    protected abstract TResponseDto MapToDto(TEntity entity);
+    protected TResponseDto MapToDto(TEntity entity) => (TResponseDto)(dynamic)entity;
 
     protected IActionResult HandleErrors(List<Error> errors)
     {
@@ -28,12 +28,12 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
 
         var statusCode = first.Type switch
         {
-            ErrorType.NotFound     => StatusCodes.Status404NotFound,
-            ErrorType.Conflict     => StatusCodes.Status409Conflict,
-            ErrorType.Validation   => StatusCodes.Status400BadRequest,
+            ErrorType.NotFound => StatusCodes.Status404NotFound,
+            ErrorType.Conflict => StatusCodes.Status409Conflict,
+            ErrorType.Validation => StatusCodes.Status400BadRequest,
             ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
-            ErrorType.Forbidden    => StatusCodes.Status403Forbidden,
-            _                      => StatusCodes.Status500InternalServerError
+            ErrorType.Forbidden => StatusCodes.Status403Forbidden,
+            _ => StatusCodes.Status500InternalServerError
         };
 
         return Problem(title: first.Code, detail: first.Description, statusCode: statusCode);

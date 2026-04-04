@@ -15,9 +15,9 @@ public class VehicleTripStopMap : IEntityTypeConfiguration<VehicleTripStop>
         builder.Property(x => x.QueuePosition).IsRequired();
 
         builder.HasOne(x => x.VehicleTrip)
-            .WithMany()
+            .WithMany(x => x.ListVehicleTripStop)
             .HasForeignKey(x => x.VehicleTripId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(x => x.Address)
             .WithMany()
