@@ -6,11 +6,10 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 public class DriverController : BaseController<Driver, IDriverService, DriverDto, CreateDriverDto, UpdateDriverDto>
 {
     public DriverController(IDriverService driverService) : base(driverService) { }
 
 
 }
+

@@ -6,11 +6,10 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 public class VehicleTripStopController : BaseController<VehicleTripStop, IVehicleTripStopService, VehicleTripStopDto, CreateVehicleTripStopDto, UpdateVehicleTripStopDto>
 {
     public VehicleTripStopController(IVehicleTripStopService service) : base(service) { }
 
 
 }
+

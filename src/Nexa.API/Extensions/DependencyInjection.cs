@@ -30,6 +30,7 @@ public static class DependencyInjection
 
         // Services
         services.AddTransient<IAuthenticateService, AuthenticateService>();
+        services.AddTransient<IHomePageService, HomePageService>();
         services.AddTransient<IUserService, UserService>();
         services.AddTransient<IEmployeeService, EmployeeService>();
         services.AddTransient<IHousingService, HousingService>();

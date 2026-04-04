@@ -6,11 +6,10 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 public class HousingAllocationController : BaseController<HousingAllocation, IHousingAllocationService, HousingAllocationDto, CreateHousingAllocationDto, UpdateHousingAllocationDto>
 {
     public HousingAllocationController(IHousingAllocationService housingAllocationService) : base(housingAllocationService) { }
 
 
 }
+

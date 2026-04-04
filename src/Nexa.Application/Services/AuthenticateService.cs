@@ -7,7 +7,7 @@ namespace Nexa.Application.Services;
 
 public class AuthenticateService(IUserRepository userRepository, ITokenService tokenService) : IAuthenticateService
 {
-    public async Task<AuthenticateDTO> Authenticate(InputAuthenticateDTO inputAuthenticateDTO)
+    public async Task<AuthenticateDto> Authenticate(InputAuthenticateDto inputAuthenticateDTO)
     {
         User? relatedUser = await userRepository.GetByEmail(inputAuthenticateDTO.Email);
         if (relatedUser == null)
@@ -18,6 +18,6 @@ public class AuthenticateService(IUserRepository userRepository, ITokenService t
 
         string token = tokenService.GenerateToken(relatedUser);
 
-        return new AuthenticateDTO(token);
+        return new AuthenticateDto(token);
     }
 }

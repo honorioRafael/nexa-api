@@ -4,5 +4,5 @@ namespace Nexa.Application.Interfaces.Services;
 
 public interface IAuthenticateService
 {
-    Task<AuthenticateDTO> Authenticate(InputAuthenticateDTO inputAuthenticateDTO);
+    Task<AuthenticateDto> Authenticate(InputAuthenticateDto inputAuthenticateDTO);
 }

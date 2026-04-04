@@ -1,10 +1,10 @@
 ﻿namespace Nexa.Application.DTOs.Authenticate;
 
-public class AuthenticateDTO
+public class AuthenticateDto
 {
     public string Token { get; private set; }
 
-    public AuthenticateDTO(string token)
+    public AuthenticateDto(string token)
     {
         Token = token;
     }

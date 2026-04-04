@@ -9,7 +9,7 @@ namespace Nexa.API.Controllers;
 public class AuthenticateController(IAuthenticateService service) : ControllerBase
 {
     [HttpPost("Authenticate")]
-    public async Task<IActionResult> Authenticate(InputAuthenticateDTO inputAuthenticateDTO)
+    public async Task<IActionResult> Authenticate(InputAuthenticateDto inputAuthenticateDTO)
     {
         try
         {

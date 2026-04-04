@@ -6,8 +6,6 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
 public class VehicleTripController : BaseController<VehicleTrip, IVehicleTripService, VehicleTripDto, CreateVehicleTripDto, UpdateVehicleTripDto>
 {
     public VehicleTripController(IVehicleTripService vehicleTripService) : base(vehicleTripService) { }
@@ -22,3 +20,4 @@ public class VehicleTripController : BaseController<VehicleTrip, IVehicleTripSer
             HandleErrors);
     }
 }
+

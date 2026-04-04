@@ -5,4 +5,5 @@ namespace Nexa.Domain.Interfaces.Repositories;
 
 public interface IVehicleRepository : IBaseRepository<Vehicle>
 {
+    Task<(int TotalVehicles, int AvailableVehicles)> GetHomePageData(CancellationToken cancellationToken = default);
 }
