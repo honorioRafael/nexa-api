@@ -9,7 +9,12 @@ namespace Nexa.Application.Services;
 
 public class VehicleTripService : BaseService<VehicleTrip, IVehicleTripRepository, CreateVehicleTripDto, UpdateVehicleTripDto>, IVehicleTripService
 {
-    public VehicleTripService(IVehicleTripRepository repository) : base(repository) { }
+    private readonly IHousingRepository _housingRepository;
+
+    public VehicleTripService(IVehicleTripRepository repository, IHousingRepository housingRepository) : base(repository)
+    {
+        _housingRepository = housingRepository;
+    }
 
     public async Task<ErrorOr<VehicleTrip>> GetLastByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken = default)
     {
@@ -18,5 +23,15 @@ public class VehicleTripService : BaseService<VehicleTrip, IVehicleTripRepositor
             return Error.NotFound(description: $"Não foi encontrado nenhum registro para o veículo {vehicleId}");
 
         return entity;
+    }
+
+    public async Task<ErrorOr<List<VehicleTripDto>>> GetByHousingIdAsync(long housingId, CancellationToken cancellationToken = default)
+    {
+        var housing = await _housingRepository.GetByIdAsync(housingId, cancellationToken);
+        if (housing is null)
+            return Error.NotFound(description: $"Housing com Id {housingId} não encontrado(a).");
+
+        var entities = await _repository.GetByAddressIdAsync(housing.AddressId, cancellationToken);
+        return entities.Select(e => (VehicleTripDto)e!).ToList();
     }
 }

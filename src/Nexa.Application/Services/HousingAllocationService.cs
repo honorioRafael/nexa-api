@@ -11,4 +11,10 @@ public class HousingAllocationService : BaseService<HousingAllocation, IHousingA
     public HousingAllocationService(IHousingAllocationRepository repository) : base(repository)
     {
     }
+
+    public async Task<List<HousingAllocationDto>> GetByHousingIdAsync(long housingId, CancellationToken cancellationToken = default)
+    {
+        var entities = await _repository.GetByHousingIdAsync(housingId, cancellationToken);
+        return entities.Select(e => (HousingAllocationDto)e!).ToList();
+    }
 }

@@ -10,6 +10,10 @@ public class HousingAllocationController : BaseController<HousingAllocation, IHo
 {
     public HousingAllocationController(IHousingAllocationService housingAllocationService) : base(housingAllocationService) { }
 
-
+    [HttpGet("GetByHousingId/{housingId}")]
+    public async Task<IActionResult> GetByHousingId(long housingId, CancellationToken cancellationToken)
+    {
+        var result = await _service.GetByHousingIdAsync(housingId, cancellationToken);
+        return Ok(result);
+    }
 }
-

@@ -6,4 +6,5 @@ namespace Nexa.Application.Interfaces.Services;
 
 public interface IHousingAllocationService : IBaseService<HousingAllocation, CreateHousingAllocationDto, UpdateHousingAllocationDto>
 {
+    Task<List<HousingAllocationDto>> GetByHousingIdAsync(long housingId, CancellationToken cancellationToken = default);
 }

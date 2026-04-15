@@ -19,5 +19,14 @@ public class VehicleTripController : BaseController<VehicleTrip, IVehicleTripSer
             entity => Ok(MapToDto(entity)),
             HandleErrors);
     }
+
+    [HttpGet("GetByHousingId/{housingId}")]
+    public async Task<IActionResult> GetByHousingId(long housingId, CancellationToken cancellationToken)
+    {
+        var result = await _service.GetByHousingIdAsync(housingId, cancellationToken);
+        return result.Match(
+            dtos => Ok(dtos),
+            HandleErrors);
+    }
 }
 

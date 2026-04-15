@@ -24,4 +24,15 @@ public class VehicleTripRepository : BaseRepository<VehicleTrip>, IVehicleTripRe
                 .ThenInclude(vts => vts.Address)
             .FirstOrDefaultAsync(cancellationToken);
     }
+
+    public async Task<List<VehicleTrip>> GetByAddressIdAsync(long addressId, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Where(x => x.OriginAddressId == addressId || x.DestinationAddressId == addressId)
+            .Include(x => x.Vehicle)
+            .Include(x => x.ListVehicleTripEmployee)
+                .ThenInclude(vte => vte.Employee)
+            .ToListAsync(cancellationToken);
+    }
 }

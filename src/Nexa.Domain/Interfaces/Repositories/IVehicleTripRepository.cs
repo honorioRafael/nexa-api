@@ -6,4 +6,5 @@ namespace Nexa.Domain.Interfaces.Repositories;
 public interface IVehicleTripRepository : IBaseRepository<VehicleTrip>
 {
     Task<VehicleTrip?> GetLastByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken = default);
+    Task<List<VehicleTrip>> GetByAddressIdAsync(long addressId, CancellationToken cancellationToken = default);
 }
