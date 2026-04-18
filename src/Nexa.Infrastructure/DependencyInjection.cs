@@ -4,8 +4,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nexa.Application.Interfaces.Services;
+using Nexa.Domain.Interfaces.Repositories;
 using Nexa.Infrastructure.Authentication;
 using Nexa.Infrastructure.Persistence;
+using Nexa.Infrastructure.Repositories;
 using System.Text;
 
 namespace Nexa.Infrastructure;
@@ -44,8 +46,23 @@ public static class DependencyInjection
             };
         });
 
-        // Services
+        // Infrastructure Services
         services.AddScoped<ITokenService, TokenService>();
+
+        // Repositories
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+        services.AddScoped<IHousingRepository, HousingRepository>();
+        services.AddScoped<IVehicleModelRepository, VehicleModelRepository>();
+        services.AddScoped<IVehicleRepository, VehicleRepository>();
+        services.AddScoped<IDriverRepository, DriverRepository>();
+        services.AddScoped<IHousingAllocationRepository, HousingAllocationRepository>();
+        services.AddScoped<IVehicleTripRepository, VehicleTripRepository>();
+        services.AddScoped<IVehicleMaintenanceRepository, VehicleMaintenanceRepository>();
+        services.AddScoped<IAddressRepository, AddressRepository>();
+        services.AddScoped<IHousingRoomRepository, HousingRoomRepository>();
+        services.AddScoped<IVehicleTripEmployeeRepository, VehicleTripEmployeeRepository>();
+        services.AddScoped<IVehicleTripStopRepository, VehicleTripStopRepository>();
 
         return services;
     }

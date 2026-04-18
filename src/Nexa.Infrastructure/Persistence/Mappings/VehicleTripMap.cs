@@ -16,7 +16,7 @@ public class VehicleTripMap : IEntityTypeConfiguration<VehicleTrip>
         builder.Property(x => x.Status).IsRequired().HasConversion<int>();
 
         builder.Property(x => x.Description).HasMaxLength(500);
-        builder.Property(x => x.CurrentOcupation).IsRequired();
+        builder.Property(x => x.CurrentOccupation).IsRequired();
 
         builder.HasOne(x => x.Driver)
             .WithMany()

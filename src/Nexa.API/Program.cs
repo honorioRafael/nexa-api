@@ -1,6 +1,6 @@
 using Microsoft.OpenApi;
-using Nexa.API.Extensions;
 using Nexa.API.Filters;
+using Nexa.API.Middlewares;
 using Nexa.Application;
 using Nexa.Infrastructure;
 
@@ -13,8 +13,6 @@ builder.Services.AddControllers(options =>
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
-
-builder.Services.AddProjectDependencies();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -40,6 +38,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {

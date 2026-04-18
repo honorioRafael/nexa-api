@@ -13,7 +13,7 @@ public class VehicleTrip : Entity
     public VehicleTripStatus Status { get; set; }
     public decimal Distance { get; set; }
     public string Description { get; set; } = string.Empty;
-    public int CurrentOcupation { get; set; }
+    public int CurrentOccupation { get; set; }
 
     #region Navigation Properties
     public Driver? Driver { get; set; }

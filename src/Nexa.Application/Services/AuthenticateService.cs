@@ -1,20 +1,18 @@
-﻿using Nexa.Application.DTOs.Authenticate;
+using ErrorOr;
+using Nexa.Application.DTOs.Authenticate;
 using Nexa.Application.Interfaces.Services;
-using Nexa.Domain.Entities;
 using Nexa.Domain.Interfaces.Repositories;
 
 namespace Nexa.Application.Services;
 
 public class AuthenticateService(IUserRepository userRepository, ITokenService tokenService) : IAuthenticateService
 {
-    public async Task<AuthenticateDto> Authenticate(InputAuthenticateDto inputAuthenticateDTO)
+    public async Task<ErrorOr<AuthenticateDto>> Authenticate(InputAuthenticateDto inputAuthenticateDTO)
     {
-        User? relatedUser = await userRepository.GetByEmail(inputAuthenticateDTO.Email);
-        if (relatedUser == null)
-            throw new Exception("Email inválido");
+        var relatedUser = await userRepository.GetByEmail(inputAuthenticateDTO.Email);
 
-        if (!string.Equals(relatedUser.Password, inputAuthenticateDTO.Password, StringComparison.Ordinal))
-            throw new Exception("Senha inválida");
+        if (relatedUser is null || !BCrypt.Net.BCrypt.Verify(inputAuthenticateDTO.Password, relatedUser.Password))
+            return Error.Unauthorized(description: "Credenciais inválidas.");
 
         string token = tokenService.GenerateToken(relatedUser);
 

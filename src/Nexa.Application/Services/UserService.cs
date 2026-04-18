@@ -20,6 +20,11 @@ public class UserService : BaseService<User, IUserRepository, CreateUserDto, Upd
 
         return Result.Success;
     }
+
+    protected override void OnCreateEntityMapped(User entity, CreateUserDto createDto)
+    {
+        entity.Password = BCrypt.Net.BCrypt.HashPassword(entity.Password);
+    }
     #endregion
 
     #region Update
@@ -30,6 +35,11 @@ public class UserService : BaseService<User, IUserRepository, CreateUserDto, Upd
             return Error.Conflict(description: "Já existe um usuário com esse email.");
 
         return Result.Success;
+    }
+
+    protected override void OnUpdateEntityMapped(User entity, UpdateUserDto updateDto)
+    {
+        entity.Password = BCrypt.Net.BCrypt.HashPassword(entity.Password);
     }
     #endregion
 }

@@ -12,6 +12,20 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
 {
     protected readonly TRepository _repository;
 
+    private static readonly IReadOnlyList<(PropertyInfo DtoProperty, PropertyInfo EntityProperty)> _createMappings = BuildMappings<TCreateDto>();
+    private static readonly IReadOnlyList<(PropertyInfo DtoProperty, PropertyInfo EntityProperty)> _updateMappings = BuildMappings<TUpdateDto>();
+
+    private static IReadOnlyList<(PropertyInfo DtoProperty, PropertyInfo EntityProperty)> BuildMappings<TDto>()
+    {
+        var entityProperties = typeof(TEntity).GetProperties();
+        return typeof(TDto).GetProperties()
+            .Select(dp => (DtoProperty: dp, EntityProperty: entityProperties.FirstOrDefault(ep => ep.Name == dp.Name)))
+            .Where(pair => pair.EntityProperty is not null)
+            .Select(pair => (pair.DtoProperty, pair.EntityProperty!))
+            .ToList()
+            .AsReadOnly();
+    }
+
     public BaseService(TRepository repository)
     {
         _repository = repository;
@@ -43,16 +57,6 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
 
     public virtual async Task<ErrorOr<List<TEntity>>> CreateMultipleAsync(List<TCreateDto> listDto, CancellationToken cancellationToken = default)
     {
-        List<PropertyInfo> listEntityPropertyInfo = typeof(TEntity).GetProperties().ToList();
-        var listDtoPropertyInfo = (from i in typeof(TCreateDto).GetProperties()
-                                   let entityPropertyInfo = listEntityPropertyInfo.FirstOrDefault(x => x.Name == i.Name)
-                                   where entityPropertyInfo is not null
-                                   select new
-                                   {
-                                       DtoPropertyInfo = i,
-                                       EntityPropertyInfo = entityPropertyInfo
-                                   }).ToList();
-
         List<TEntity> listEntity = new();
         foreach (TCreateDto dto in listDto)
         {
@@ -60,11 +64,12 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
             if (onCreatingResult.IsError) return onCreatingResult.Errors;
 
             TEntity entity = new();
-            foreach (var data in listDtoPropertyInfo)
+            foreach (var (DtoProperty, EntityProperty) in _createMappings)
             {
-                data.EntityPropertyInfo.SetValue(entity, data.DtoPropertyInfo.GetValue(dto));
+                EntityProperty.SetValue(entity, DtoProperty.GetValue(dto));
             }
 
+            OnCreateEntityMapped(entity, dto);
             listEntity.Add(entity);
         }
 
@@ -76,21 +81,13 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
 
     public virtual Task<ErrorOr<Success>> OnEntityCreating(TCreateDto createDto, CancellationToken cancellationToken = default)
         => Task.FromResult<ErrorOr<Success>>(Result.Success);
+
+    protected virtual void OnCreateEntityMapped(TEntity entity, TCreateDto createDto) { }
     #endregion
 
     #region Update
     public virtual async Task<ErrorOr<TEntity>> UpdateAsync(long id, TUpdateDto dto, CancellationToken cancellationToken = default)
     {
-        List<PropertyInfo> listEntityPropertyInfo = typeof(TEntity).GetProperties().ToList();
-        var listDtoPropertyInfo = (from i in typeof(TUpdateDto).GetProperties()
-                                   let entityPropertyInfo = listEntityPropertyInfo.FirstOrDefault(x => x.Name == i.Name)
-                                   where entityPropertyInfo is not null
-                                   select new
-                                   {
-                                       DtoPropertyInfo = i,
-                                       EntityPropertyInfo = entityPropertyInfo
-                                   }).ToList();
-
         TEntity? entity = await _repository.GetByIdAsync(id, cancellationToken);
         if (entity is null)
             return Error.NotFound(description: $"{typeof(TEntity).Name} com Id {id} não encontrado(a).");
@@ -98,10 +95,12 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
         var onUpdatingResult = await OnEntityUpdating(id, dto, cancellationToken);
         if (onUpdatingResult.IsError) return onUpdatingResult.Errors;
 
-        foreach (var data in listDtoPropertyInfo)
+        foreach (var (DtoProperty, EntityProperty) in _updateMappings)
         {
-            data.EntityPropertyInfo.SetValue(entity, data.DtoPropertyInfo.GetValue(dto));
+            EntityProperty.SetValue(entity, DtoProperty.GetValue(dto));
         }
+
+        OnUpdateEntityMapped(entity, dto);
 
         _repository.Update(entity);
         await _repository.SaveChangesAsync(cancellationToken);
@@ -111,6 +110,8 @@ public class BaseService<TEntity, TRepository, TCreateDto, TUpdateDto> : IBaseSe
 
     public virtual Task<ErrorOr<Success>> OnEntityUpdating(long id, TUpdateDto updateDTO, CancellationToken cancellationToken = default)
         => Task.FromResult<ErrorOr<Success>>(Result.Success);
+
+    protected virtual void OnUpdateEntityMapped(TEntity entity, TUpdateDto updateDto) { }
     #endregion
 
     #region Delete

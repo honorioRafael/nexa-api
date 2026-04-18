@@ -1,23 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using Nexa.API.Controllers.Base;
 using Nexa.Application.DTOs.Authenticate;
 using Nexa.Application.Interfaces.Services;
 
 namespace Nexa.API.Controllers;
 
-[ApiController]
 [Route("api/auth")]
-public class AuthenticateController(IAuthenticateService service) : ControllerBase
+public class AuthenticateController(IAuthenticateService service) : ApiController
 {
     [HttpPost("login")]
     public async Task<IActionResult> Authenticate(InputAuthenticateDto inputAuthenticateDTO)
     {
-        try
-        {
-            return Ok(await service.Authenticate(inputAuthenticateDTO));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest(ex.Message);
-        }
+        var result = await service.Authenticate(inputAuthenticateDTO);
+        return result.Match(
+            value => Ok(value),
+            HandleErrors);
     }
 }
