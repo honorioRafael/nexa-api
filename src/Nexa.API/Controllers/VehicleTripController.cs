@@ -6,12 +6,13 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
+[Route("api/vehicle-trips")]
 public class VehicleTripController : BaseController<VehicleTrip, IVehicleTripService, VehicleTripDto, CreateVehicleTripDto, UpdateVehicleTripDto>
 {
     public VehicleTripController(IVehicleTripService vehicleTripService) : base(vehicleTripService) { }
 
 
-    [HttpGet("GetLastByVehicleId/{vehicleId}")]
+    [HttpGet("last/vehicle/{vehicleId}")]
     public virtual async Task<IActionResult> GetLastByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken)
     {
         var result = await _service.GetLastByVehicleIdAsync(vehicleId, cancellationToken);
@@ -20,7 +21,7 @@ public class VehicleTripController : BaseController<VehicleTrip, IVehicleTripSer
             HandleErrors);
     }
 
-    [HttpGet("GetByHousingId/{housingId}")]
+    [HttpGet("housing/{housingId}")]
     public async Task<IActionResult> GetByHousingId(long housingId, CancellationToken cancellationToken)
     {
         var result = await _service.GetByHousingIdAsync(housingId, cancellationToken);

@@ -6,6 +6,7 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
+[Route("api/vehicle-models")]
 public class VehicleModelController : BaseController<VehicleModel, IVehicleModelService, VehicleModelDto, CreateVehicleModelDto, UpdateVehicleModelDto>
 {
     public VehicleModelController(IVehicleModelService vehicleModelService) : base(vehicleModelService) { }

@@ -5,10 +5,10 @@ using Nexa.Application.Interfaces.Services;
 namespace Nexa.API.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/auth")]
 public class AuthenticateController(IAuthenticateService service) : ControllerBase
 {
-    [HttpPost("Authenticate")]
+    [HttpPost("login")]
     public async Task<IActionResult> Authenticate(InputAuthenticateDto inputAuthenticateDTO)
     {
         try

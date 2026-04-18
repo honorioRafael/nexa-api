@@ -6,6 +6,7 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
+[Route("api/vehicle-maintenances")]
 public class VehicleMaintenanceController : BaseController<VehicleMaintenance, IVehicleMaintenanceService, VehicleMaintenanceDto, CreateVehicleMaintenanceDto, UpdateVehicleMaintenanceDto>
 {
     public VehicleMaintenanceController(IVehicleMaintenanceService vehicleMaintenanceService) : base(vehicleMaintenanceService) { }

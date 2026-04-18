@@ -16,6 +16,7 @@ public class VehicleTripRepository : BaseRepository<VehicleTrip>, IVehicleTripRe
             .AsNoTracking()
             .Where(x => x.VehicleId == vehicleId)
             .Include(x => x.Vehicle)
+                .ThenInclude(v => v!.VehicleModel)
             .Include(x => x.OriginAddress)
             .Include(x => x.DestinationAddress)
             .Include(x => x.ListVehicleTripEmployee)

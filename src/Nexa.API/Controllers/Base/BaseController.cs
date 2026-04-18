@@ -7,7 +7,6 @@ using Nexa.Domain.Entities;
 namespace Nexa.API.Controllers.Base;
 
 [ApiController]
-[Route("api/[controller]")]
 [Authorize]
 public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto, TUpdateDto> : ControllerBase
     where TEntity : Entity
@@ -40,7 +39,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
     }
 
     #region Get
-    [HttpGet("Get/{id}")]
+    [HttpGet("{id}")]
     public virtual async Task<IActionResult> Get(long id, CancellationToken cancellationToken)
     {
         var result = await _service.GetByIdAsync(id, cancellationToken);
@@ -49,7 +48,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
             HandleErrors);
     }
 
-    [HttpGet("GetAll")]
+    [HttpGet]
     public virtual async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         var entities = await _service.GetAllAsync(cancellationToken);
@@ -58,7 +57,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
     #endregion
 
     #region Create
-    [HttpPost("Create")]
+    [HttpPost]
     public virtual async Task<IActionResult> Create(TCreateDto dto, CancellationToken cancellationToken)
     {
         var result = await _service.CreateAsync(dto, cancellationToken);
@@ -67,7 +66,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
             HandleErrors);
     }
 
-    [HttpPost("CreateMultiple")]
+    [HttpPost("bulk")]
     public virtual async Task<IActionResult> CreateMultiple(List<TCreateDto> dtos, CancellationToken cancellationToken)
     {
         var result = await _service.CreateMultipleAsync(dtos, cancellationToken);
@@ -78,7 +77,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
     #endregion
 
     #region Update
-    [HttpPut("Update/{id}")]
+    [HttpPut("{id}")]
     public virtual async Task<IActionResult> Update(long id, TUpdateDto dto, CancellationToken cancellationToken)
     {
         var result = await _service.UpdateAsync(id, dto, cancellationToken);
@@ -89,7 +88,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
     #endregion
 
     #region Delete
-    [HttpDelete("Delete/{id}")]
+    [HttpDelete("{id}")]
     public virtual async Task<IActionResult> Delete(long id, CancellationToken cancellationToken)
     {
         var result = await _service.DeleteAsync(id, cancellationToken);
@@ -98,7 +97,7 @@ public abstract class BaseController<TEntity, TService, TResponseDto, TCreateDto
             HandleErrors);
     }
 
-    [HttpDelete("DeleteMultiple")]
+    [HttpDelete("bulk")]
     public virtual async Task<IActionResult> DeleteMultiple(List<long> listid, CancellationToken cancellationToken)
     {
         var result = await _service.DeleteMultipleAsync(listid, cancellationToken);

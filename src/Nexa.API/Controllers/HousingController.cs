@@ -6,6 +6,7 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
+[Route("api/housings")]
 public class HousingController : BaseController<Housing, IHousingService, HousingDto, CreateHousingDto, UpdateHousingDto>
 {
     public HousingController(IHousingService housingService) : base(housingService) { }

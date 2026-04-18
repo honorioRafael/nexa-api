@@ -6,6 +6,7 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
+[Route("api/users")]
 public class UserController : BaseController<User, IUserService, UserDto, CreateUserDto, UpdateUserDto>
 {
     public UserController(IUserService userService) : base(userService) { }

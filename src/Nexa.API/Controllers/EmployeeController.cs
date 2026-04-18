@@ -6,6 +6,7 @@ using Nexa.Domain.Entities;
 
 namespace Nexa.API.Controllers;
 
+[Route("api/employees")]
 public class EmployeeController : BaseController<Employee, IEmployeeService, EmployeeDto, CreateEmployeeDto, UpdateEmployeeDto>
 {
     public EmployeeController(IEmployeeService employeeService) : base(employeeService) { }
