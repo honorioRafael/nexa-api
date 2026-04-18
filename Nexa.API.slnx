@@ -1,4 +1,7 @@
 <Solution>
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
   <Project Path="src/Nexa.API/Nexa.API.csproj" />
   <Project Path="src/Nexa.Domain/Nexa.Domain.csproj" />
   <Project Path="src/Nexa.Application/Nexa.Application.csproj" />

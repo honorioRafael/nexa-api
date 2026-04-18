@@ -26,6 +26,7 @@ A plataforma foi projetada para ser utilizada internamente pela organização, o
 * [.NET 10 SDK](https://dotnet.microsoft.com/download)
 * [PostgreSQL](https://www.postgresql.org/download/) (versão 18.x)
 * [Entity Framework Core CLI](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
+* [Docker](https://www.docker.com/products/docker-desktop/) e [Docker Compose](https://docs.docker.com/compose/) (opcional, para rodar via contêineres)
 
 Para instalar a CLI do EF Core globalmente, caso ainda não tenha:
 ```bash
@@ -36,43 +37,49 @@ dotnet tool install --global dotnet-ef
 
 ## Configuração do ambiente
 
-### String de conexão
+### Variáveis de Ambiente e Banco de Dados
 
-Antes de iniciar a API, verifique e ajuste a string de conexão com o banco de dados no arquivo `appsettings.Development.json`, localizado na raiz do projeto da API:
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=nexa_db;Username=seu_usuario;Password=sua_senha"
-  }
-}
-```
+O projeto utiliza um arquivo `.env` para gerenciar configurações, incluindo a string de conexão com o banco de dados.
 
-Substitua `seu_usuario` e `sua_senha` pelas credenciais do seu PostgreSQL local. Certifique-se também de que o banco de dados informado em `Database` já existe, ou que o usuário tem permissão para criá-lo.
+1. Na raiz do projeto, crie uma cópia do arquivo `.env.example` e renomeie-a para `.env`.
+2. Edite o arquivo `.env` com suas configurações.
 
 ---
 
 ## Executando as migrations
 
-Com o banco de dados configurado e acessível, aplique as migrations para criar o schema:
+Com o banco de dados configurado e acessível, aplique as migrations para criar o schema, informando a connection string:
 ```bash
-dotnet ef database update --project src/Nexa.Infrastructure --startup-project src/Nexa.Api
+dotnet ef database update --project src/Nexa.Infrastructure --startup-project src/Nexa.API --connection "<sua_connection_string_aqui>"
 ```
 
 Para criar uma nova migration após alterações no domínio:
 ```bash
-dotnet ef migrations add NomeDaMigration --project src/Nexa.Infrastructure --startup-project src/Nexa.Api
+dotnet ef migrations add NomeDaMigration --project src/Nexa.Infrastructure --startup-project src/Nexa.API
 ```
 
 Para reverter a última migration aplicada:
 ```bash
-dotnet ef database update NomeDaMigrationAnterior --project src/Nexa.Infrastructure --startup-project src/Nexa.Api
+dotnet ef database update NomeDaMigrationAnterior --project src/Nexa.Infrastructure --startup-project src/Nexa.API --connection "<sua_connection_string_aqui>"
 ```
 
 ---
 
-## Inicializando a API
+## Executando com Docker
 
-No diretório do projeto da API (`src/Nexa.Api` ou equivalente), execute:
+A maneira mais prática de iniciar o ambiente por completo (API e Banco de Dados) é através do Docker Compose:
+
+```bash
+docker-compose up -d --build
+```
+
+A API será inicializada e o banco de dados PostgreSQL também subirá automaticamente com as configurações fornecidas no arquivo `.env`.
+
+---
+
+## Inicializando a API localmente
+
+No diretório do projeto da API (`src/Nexa.API` ou equivalente), execute:
 ```bash
 dotnet run
 ```
