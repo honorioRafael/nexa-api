@@ -26,7 +26,7 @@ A plataforma foi projetada para ser utilizada internamente pela organização, o
 * [.NET 10 SDK](https://dotnet.microsoft.com/download)
 * [PostgreSQL](https://www.postgresql.org/download/) (versão 18.x)
 * [Entity Framework Core CLI](https://learn.microsoft.com/en-us/ef/core/cli/dotnet)
-* [Docker](https://www.docker.com/products/docker-desktop/) e [Docker Compose](https://docs.docker.com/compose/) (opcional, para rodar via contêineres)
+* [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 Para instalar a CLI do EF Core globalmente, caso ainda não tenha:
 ```bash
