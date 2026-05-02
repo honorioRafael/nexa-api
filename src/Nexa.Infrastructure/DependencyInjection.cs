@@ -47,6 +47,8 @@ public static class DependencyInjection
         });
 
         // Infrastructure Services
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddScoped<ITokenService, TokenService>();
 
         // Repositories

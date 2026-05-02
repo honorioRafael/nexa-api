@@ -1,3 +1,4 @@
+using ErrorOr;
 using Nexa.Application.DTOs;
 using Nexa.Application.Interfaces.Services;
 using Nexa.Application.Services.Base;
@@ -8,7 +9,15 @@ namespace Nexa.Application.Services;
 
 public class DriverService : BaseService<Driver, IDriverRepository, CreateDriverDto, UpdateDriverDto>, IDriverService
 {
-    public DriverService(IDriverRepository repository) : base(repository)
+    private readonly ICurrentUser _currentUser;
+
+    public DriverService(IDriverRepository repository, ICurrentUser currentUser) : base(repository)
     {
+        _currentUser = currentUser;
+    }
+
+    protected override void OnCreateEntityMapped(Driver entity, CreateDriverDto createDto)
+    {
+        entity.UserId = _currentUser.Id!.Value;
     }
 }

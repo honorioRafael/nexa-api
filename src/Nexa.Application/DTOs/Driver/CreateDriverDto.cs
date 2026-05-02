@@ -1,3 +1,3 @@
 ﻿namespace Nexa.Application.DTOs;
 
-public record CreateDriverDto(long UserId, string LicenseNumber, DateTime LicenseExpiration, string LicenseType, long? VehicleId);
+public record CreateDriverDto(string LicenseNumber, DateTime LicenseExpiration, string LicenseType, long? VehicleId);
