@@ -11,4 +11,7 @@ public class VehicleService : BaseService<Vehicle, IVehicleRepository, CreateVeh
     public VehicleService(IVehicleRepository repository) : base(repository)
     {
     }
+
+    public override Task<List<Vehicle>> GetAllAsync(CancellationToken cancellationToken = default)
+        => _repository.GetAllWithModelAsync(cancellationToken);
 }

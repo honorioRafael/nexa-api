@@ -11,6 +11,14 @@ public class VehicleRepository : BaseRepository<Vehicle>, IVehicleRepository
 {
     public VehicleRepository(AppDbContext context) : base(context) { }
 
+    public async Task<List<Vehicle>> GetAllWithModelAsync(CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Include(x => x.VehicleModel)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<(int TotalVehicles, int AvailableVehicles)> GetHomePageData(CancellationToken cancellationToken = default)
     {
         var fetch = await _dbSet

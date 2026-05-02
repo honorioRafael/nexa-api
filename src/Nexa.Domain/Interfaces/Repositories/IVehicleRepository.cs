@@ -6,4 +6,5 @@ namespace Nexa.Domain.Interfaces.Repositories;
 public interface IVehicleRepository : IBaseRepository<Vehicle>
 {
     Task<(int TotalVehicles, int AvailableVehicles)> GetHomePageData(CancellationToken cancellationToken = default);
+    Task<List<Vehicle>> GetAllWithModelAsync(CancellationToken cancellationToken = default);
 }
