@@ -10,10 +10,47 @@ namespace Nexa.Application.Services;
 public class VehicleTripService : BaseService<VehicleTrip, IVehicleTripRepository, CreateVehicleTripDto, UpdateVehicleTripDto>, IVehicleTripService
 {
     private readonly IHousingRepository _housingRepository;
+    private readonly IDriverRepository _driverRepository;
+    private readonly IVehicleRepository _vehicleRepository;
+    private readonly IAddressRepository _addressRepository;
 
-    public VehicleTripService(IVehicleTripRepository repository, IHousingRepository housingRepository) : base(repository)
+    public VehicleTripService(
+        IVehicleTripRepository repository, 
+        IHousingRepository housingRepository,
+        IDriverRepository driverRepository,
+        IVehicleRepository vehicleRepository,
+        IAddressRepository addressRepository) : base(repository)
     {
         _housingRepository = housingRepository;
+        _driverRepository = driverRepository;
+        _vehicleRepository = vehicleRepository;
+        _addressRepository = addressRepository;
+    }
+
+    public override async Task<ErrorOr<Success>> OnEntityCreating(CreateVehicleTripDto createDto, CancellationToken cancellationToken = default)
+    {
+        var driver = await _driverRepository.GetByIdAsync(createDto.DriverId, cancellationToken);
+        if (driver == null)
+            return Error.NotFound(description: "Motorista não encontrado.");
+
+        var vehicle = await _vehicleRepository.GetByIdAsync(createDto.VehicleId, cancellationToken);
+        if (vehicle == null)
+            return Error.NotFound(description: "Veículo não encontrado.");
+
+        var originAddress = await _addressRepository.GetByIdAsync(createDto.OriginAddressId, cancellationToken);
+        if (originAddress == null)
+            return Error.NotFound(description: "Endereço de origem não encontrado.");
+
+        var destinationAddress = await _addressRepository.GetByIdAsync(createDto.DestinationAddressId, cancellationToken);
+        if (destinationAddress == null)
+            return Error.NotFound(description: "Endereço de destino não encontrado.");
+
+        return Result.Success;
+    }
+
+    public override async Task<ErrorOr<Success>> OnEntityUpdating(long id, UpdateVehicleTripDto updateDto, CancellationToken cancellationToken = default)
+    {
+        return Result.Success;
     }
 
     public async Task<ErrorOr<VehicleTrip>> GetLastByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken = default)

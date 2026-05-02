@@ -15,4 +15,9 @@ public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     {
         return await _dbSet.AsNoTracking().Where(x => x.Status == EmployeeStatus.Active).CountAsync(cancellationToken);
     }
+
+    public Task<Employee?> GetByCpfAsync(string cpf, CancellationToken cancellationToken = default)
+    {
+        return _dbSet.FirstOrDefaultAsync(x => x.Cpf == cpf, cancellationToken);
+    }
 }

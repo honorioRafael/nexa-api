@@ -32,4 +32,14 @@ public class VehicleRepository : BaseRepository<Vehicle>, IVehicleRepository
             .FirstAsync(cancellationToken);
         return (fetch.TotalVehicles, fetch.AvailableVehicles);
     }
+
+    public Task<Vehicle?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)
+    {
+        return _dbSet.FirstOrDefaultAsync(x => x.LicensePlate == licensePlate, cancellationToken);
+    }
+
+    public Task<Vehicle?> GetByChassisNumberAsync(string chassisNumber, CancellationToken cancellationToken = default)
+    {
+        return _dbSet.FirstOrDefaultAsync(x => x.ChassisNumber == chassisNumber, cancellationToken);
+    }
 }

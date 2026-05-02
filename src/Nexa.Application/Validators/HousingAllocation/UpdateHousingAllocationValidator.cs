@@ -1,4 +1,4 @@
-﻿using FluentValidation;
+using FluentValidation;
 using Nexa.Application.DTOs;
 
 namespace Nexa.Application.Validators.HousingAllocation;

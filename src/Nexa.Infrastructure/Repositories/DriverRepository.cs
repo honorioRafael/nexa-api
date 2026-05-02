@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Nexa.Domain.Entities;
 using Nexa.Domain.Interfaces.Repositories;
 using Nexa.Infrastructure.Persistence;
@@ -9,5 +10,10 @@ public class DriverRepository : BaseRepository<Driver>, IDriverRepository
 {
     public DriverRepository(AppDbContext context) : base(context)
     {
+    }
+
+    public Task<Driver?> GetByLicenseNumberAsync(string licenseNumber, CancellationToken cancellationToken = default)
+    {
+        return _dbSet.FirstOrDefaultAsync(x => x.LicenseNumber == licenseNumber, cancellationToken);
     }
 }

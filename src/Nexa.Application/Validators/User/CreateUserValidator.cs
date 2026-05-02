@@ -14,6 +14,7 @@ public class CreateUserValidator : AbstractValidator<CreateUserDto>
 
         RuleFor(x => x.Password)
             .NotEmpty().WithMessage("A senha é obrigatória.")
-            .MinimumLength(8).WithMessage("A senha deve ter no mínimo 8 caracteres.");
+            .MinimumLength(8).WithMessage("A senha deve ter no mínimo 8 caracteres.")
+            .MaximumLength(100).WithMessage("A senha deve ter no máximo 100 caracteres.");
     }
 }
