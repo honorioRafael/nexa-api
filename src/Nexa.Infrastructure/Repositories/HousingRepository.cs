@@ -26,15 +26,9 @@ public class HousingRepository : BaseRepository<Housing>, IHousingRepository
 
     public async Task<(int MaxCapacity, int CurrentCapacity)> GetHomePageData(CancellationToken cancellationToken = default)
     {
-        var fetch = await _dbSet
-            .AsNoTracking()
-            .GroupBy(x => 1)
-            .Select(g => new
-            {
-                MaxCapacity = g.Sum(x => x.MaxCapacity),
-                CurrentCapacity = g.Sum(x => x.CurrentCapacity)
-            })
-            .FirstAsync(cancellationToken);
-        return (fetch.MaxCapacity, fetch.CurrentCapacity);
+        var maxCapacity = await _dbSet.AsNoTracking().SumAsync(x => x.MaxCapacity, cancellationToken);
+        var currentCapacity = await _dbSet.AsNoTracking().SumAsync(x => x.CurrentCapacity, cancellationToken);
+        
+        return (maxCapacity, currentCapacity);
     }
 }

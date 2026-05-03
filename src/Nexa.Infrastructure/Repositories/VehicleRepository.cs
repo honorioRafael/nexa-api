@@ -21,16 +21,10 @@ public class VehicleRepository : BaseRepository<Vehicle>, IVehicleRepository
 
     public async Task<(int TotalVehicles, int AvailableVehicles)> GetHomePageData(CancellationToken cancellationToken = default)
     {
-        var fetch = await _dbSet
-            .AsNoTracking()
-            .GroupBy(x => 1)
-            .Select(g => new
-            {
-                TotalVehicles = g.Count(),
-                AvailableVehicles = g.Count(x => x.Status == VehicleStatus.Available)
-            })
-            .FirstAsync(cancellationToken);
-        return (fetch.TotalVehicles, fetch.AvailableVehicles);
+        var totalVehicles = await _dbSet.AsNoTracking().CountAsync(cancellationToken);
+        var availableVehicles = await _dbSet.AsNoTracking().CountAsync(x => x.Status == VehicleStatus.Available, cancellationToken);
+        
+        return (totalVehicles, availableVehicles);
     }
 
     public Task<Vehicle?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)

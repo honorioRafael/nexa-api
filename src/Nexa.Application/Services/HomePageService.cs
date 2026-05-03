@@ -8,7 +8,11 @@ public class HomePageService(IEmployeeRepository employeeRepository, IVehicleRep
 {
     public async Task<HomePageDto> GetHomePageData(CancellationToken cancellationToken = default)
     {
-        int totalEmployees = await employeeRepository.GetTotalActiveEmployeesAsync(cancellationToken);
+        var (totalEmployees, activeEmployees) = await employeeRepository.GetHomePageData(cancellationToken);
+        int activeRate = totalEmployees == 0
+            ? 0
+            : (int)((double)activeEmployees / totalEmployees * 100);
+        var employeesDto = new HomePageEmployeesDto(totalEmployees, activeEmployees, activeRate);
 
         var (totalVehicles, availableVehicles) = await vehicleRepository.GetHomePageData(cancellationToken);
         int availabilityRate = totalVehicles == 0
@@ -22,6 +26,6 @@ public class HomePageService(IEmployeeRepository employeeRepository, IVehicleRep
             : (int)((double)currentHousingCapacity / maxHousingCapacity * 100);
         var housingDTO = new HomePageHousingDto(currentHousingCapacity, maxHousingCapacity, occupancyRate);
 
-        return new HomePageDto(totalEmployees, housingDTO, vehicleDto);
+        return new HomePageDto(employeesDto, housingDTO, vehicleDto);
     }
 }

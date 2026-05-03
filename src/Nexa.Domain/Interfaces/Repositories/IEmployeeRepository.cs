@@ -5,6 +5,6 @@ namespace Nexa.Domain.Interfaces.Repositories;
 
 public interface IEmployeeRepository : IBaseRepository<Employee>
 {
-    Task<int> GetTotalActiveEmployeesAsync(CancellationToken cancellationToken = default);
+    Task<(int TotalEmployees, int ActiveEmployees)> GetHomePageData(CancellationToken cancellationToken = default);
     Task<Employee?> GetByCpfAsync(string cpf, CancellationToken cancellationToken = default);
 }

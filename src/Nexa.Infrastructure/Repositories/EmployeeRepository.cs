@@ -11,9 +11,12 @@ public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
 {
     public EmployeeRepository(AppDbContext context) : base(context) { }
 
-    public async Task<int> GetTotalActiveEmployeesAsync(CancellationToken cancellationToken = default)
+    public async Task<(int TotalEmployees, int ActiveEmployees)> GetHomePageData(CancellationToken cancellationToken = default)
     {
-        return await _dbSet.AsNoTracking().Where(x => x.Status == EmployeeStatus.Active).CountAsync(cancellationToken);
+        var totalEmployees = await _dbSet.AsNoTracking().CountAsync(cancellationToken);
+        var activeEmployees = await _dbSet.AsNoTracking().CountAsync(x => x.Status == EmployeeStatus.Active, cancellationToken);
+        
+        return (totalEmployees, activeEmployees);
     }
 
     public Task<Employee?> GetByCpfAsync(string cpf, CancellationToken cancellationToken = default)

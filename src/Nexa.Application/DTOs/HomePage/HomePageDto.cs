@@ -1,3 +1,3 @@
-﻿namespace Nexa.Application.DTOs;
+namespace Nexa.Application.DTOs;
 
-public record HomePageDto(int ActiveEmployees, HomePageHousingDto HousingOccupation, HomePageVehiclesDto VehicleDisponibility);
+public record HomePageDto(HomePageEmployeesDto Employees, HomePageHousingDto HousingOccupation, HomePageVehiclesDto VehicleDisponibility);
