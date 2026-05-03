@@ -19,7 +19,6 @@ public class HousingMap : IEntityTypeConfiguration<Housing>
             .HasForeignKey(x => x.AddressId)
             .OnDelete(DeleteBehavior.Restrict);
         builder.Property(x => x.MaxCapacity).IsRequired();
-        builder.Property(x => x.CurrentCapacity).IsRequired();
         builder.Property(x => x.HousingStatus).IsRequired().HasConversion<int>();
         builder.Property(x => x.HousingType).IsRequired().HasConversion<int>();
         builder.Property(x => x.UseHousingRoom).IsRequired();

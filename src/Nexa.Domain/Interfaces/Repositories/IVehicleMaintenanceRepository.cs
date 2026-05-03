@@ -5,4 +5,5 @@ namespace Nexa.Domain.Interfaces.Repositories;
 
 public interface IVehicleMaintenanceRepository : IBaseRepository<VehicleMaintenance>
 {
+    Task<int> GetOpenMaintenancesCount(CancellationToken cancellationToken = default);
 }

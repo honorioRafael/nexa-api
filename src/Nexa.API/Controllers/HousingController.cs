@@ -11,6 +11,18 @@ public class HousingController : BaseController<Housing, IHousingService, Housin
 {
     public HousingController(IHousingService housingService) : base(housingService) { }
 
+    [HttpGet("{id}")]
+    public override async Task<IActionResult> Get(long id, CancellationToken cancellationToken)
+    {
+        var dto = await _service.GetByIdWithOccupancyAsync(id, cancellationToken);
+        if (dto is null) return NotFound();
+        return Ok(dto);
+    }
 
+    [HttpGet]
+    public override async Task<IActionResult> GetAll(CancellationToken cancellationToken)
+    {
+        var dtos = await _service.GetAllWithOccupancyAsync(cancellationToken);
+        return Ok(dtos);
+    }
 }
-
