@@ -37,7 +37,21 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddOpenApi();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
+
+app.UseCors("AllowAll");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
