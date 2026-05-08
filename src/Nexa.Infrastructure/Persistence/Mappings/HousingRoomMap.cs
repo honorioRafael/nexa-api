@@ -19,6 +19,6 @@ public class HousingRoomMap : IEntityTypeConfiguration<HousingRoom>
         builder.HasOne(x => x.Housing)
             .WithMany()
             .HasForeignKey(x => x.HousingId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

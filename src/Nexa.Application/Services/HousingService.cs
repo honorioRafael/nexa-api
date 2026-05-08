@@ -3,6 +3,7 @@ using Nexa.Application.DTOs;
 using Nexa.Application.Interfaces.Services;
 using Nexa.Application.Services.Base;
 using Nexa.Domain.Entities;
+using Nexa.Domain.Enums;
 using Nexa.Domain.Interfaces.Repositories;
 
 namespace Nexa.Application.Services;
@@ -28,6 +29,11 @@ public class HousingService : BaseService<Housing, IHousingRepository, CreateHou
             return Error.NotFound(description: "Address não encontrado.");
 
         return Result.Success;
+    }
+
+    protected override void OnCreateEntityMapped(Housing entity, CreateHousingDto createDto)
+    {
+        entity.HousingStatus = HousingStatus.Available;
     }
 
     public override async Task<ErrorOr<Success>> OnEntityUpdating(long id, UpdateHousingDto updateDto, CancellationToken cancellationToken = default)
