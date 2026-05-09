@@ -70,7 +70,12 @@ dotnet ef database update NomeDaMigrationAnterior --project src/Nexa.Infrastruct
 A maneira mais prática de iniciar o ambiente por completo (API e Banco de Dados) é através do Docker Compose:
 
 ```bash
-docker-compose up -d --build
+docker compose up --build
+```
+
+ou para rodar com um banco de dados local
+```bash
+docker compose --profile local up --build
 ```
 
 A API será inicializada e o banco de dados PostgreSQL também subirá automaticamente com as configurações fornecidas no arquivo `.env`.
