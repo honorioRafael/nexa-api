@@ -10,7 +10,12 @@ namespace Nexa.API.Controllers;
 [Route("api/users")]
 public class UserController : BaseController<User, IUserService, UserDto, CreateUserDto, UpdateUserDto>
 {
-    public UserController(IUserService userService) : base(userService) { }
+    private readonly ICurrentUser _currentUser;
+
+    public UserController(IUserService userService, ICurrentUser currentUser) : base(userService)
+    {
+        _currentUser = currentUser;
+    }
 
     [HttpPost]
     [AllowAnonymous]
@@ -18,5 +23,16 @@ public class UserController : BaseController<User, IUserService, UserDto, Create
     {
         return base.Create(dto, cancellationToken);
     }
-}
 
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto dto, CancellationToken cancellationToken)
+    {
+        if (!_currentUser.Id.HasValue)
+            return Unauthorized();
+
+        var result = await _service.ChangePasswordAsync(_currentUser.Id.Value, dto, cancellationToken);
+        return result.Match(
+            _ => NoContent(),
+            HandleErrors);
+    }
+}

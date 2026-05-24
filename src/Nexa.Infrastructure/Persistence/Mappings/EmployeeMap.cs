@@ -17,11 +17,6 @@ public class EmployeeMap : IEntityTypeConfiguration<Employee>
         builder.Property(x => x.PhoneNumber).HasMaxLength(20);
         builder.Property(x => x.Status).IsRequired().HasConversion<int>();
 
-        builder.HasOne(x => x.User)
-            .WithMany()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasOne(x => x.Housing)
             .WithMany()
             .HasForeignKey(x => x.HousingId)

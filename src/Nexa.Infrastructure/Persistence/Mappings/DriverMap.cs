@@ -14,11 +14,6 @@ public class DriverMap : IEntityTypeConfiguration<Driver>
         builder.Property(x => x.LicenseNumber).IsRequired().HasMaxLength(50);
         builder.Property(x => x.LicenseType).IsRequired().HasMaxLength(10);
 
-        builder.HasOne(x => x.User)
-            .WithMany()
-            .HasForeignKey(x => x.UserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasOne(x => x.Vehicle)
             .WithMany()
             .HasForeignKey(x => x.VehicleId)

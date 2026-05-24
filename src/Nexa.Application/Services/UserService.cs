@@ -18,28 +18,43 @@ public class UserService : BaseService<User, IUserRepository, CreateUserDto, Upd
         if (userByEmail != null)
             return Error.Conflict(description: "Já existe um usuário com esse email.");
 
+        User? userByCpf = await _repository.GetByCpf(createDto.Cpf, cancellationToken);
+        if (userByCpf != null)
+            return Error.Conflict(description: "Já existe um usuário com esse CPF.");
+
         return Result.Success;
     }
 
     protected override void OnCreateEntityMapped(User entity, CreateUserDto createDto)
     {
         entity.Password = BCrypt.Net.BCrypt.HashPassword(entity.Password);
+        entity.LastPasswordChange = DateTime.UtcNow;
     }
     #endregion
 
     #region Update
     public override async Task<ErrorOr<Success>> OnEntityUpdating(long id, UpdateUserDto updateDTO, CancellationToken cancellationToken = default)
     {
-        User? userByEmail = await _repository.GetByEmail(updateDTO.Email, cancellationToken);
-        if (userByEmail != null && userByEmail.Id != id)
-            return Error.Conflict(description: "Já existe um usuário com esse email.");
+        User? userByCpf = await _repository.GetByCpf(updateDTO.Cpf, cancellationToken);
+        if (userByCpf != null && userByCpf.Id != id)
+            return Error.Conflict(description: "Já existe um usuário com esse CPF.");
 
         return Result.Success;
     }
-
-    protected override void OnUpdateEntityMapped(User entity, UpdateUserDto updateDto)
-    {
-        entity.Password = BCrypt.Net.BCrypt.HashPassword(entity.Password);
-    }
     #endregion
+
+    public async Task<ErrorOr<Success>> ChangePasswordAsync(long userId, ChangePasswordDto dto, CancellationToken cancellationToken = default)
+    {
+        User? user = await _repository.GetByIdAsync(userId, cancellationToken);
+        if (user == null)
+            return Error.NotFound(description: "Usuário não encontrado.");
+
+        user.Password = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
+        user.LastPasswordChange = DateTime.UtcNow;
+
+        _repository.Update(user);
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return Result.Success;
+    }
 }

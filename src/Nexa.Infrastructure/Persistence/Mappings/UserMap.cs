@@ -18,5 +18,26 @@ public class UserMap : IEntityTypeConfiguration<User>
         builder.Property(x => x.Password)
             .IsRequired()
             .HasMaxLength(255);
+
+        builder.Property(x => x.FullName)
+            .IsRequired()
+            .HasMaxLength(255);
+
+        builder.Property(x => x.Role)
+            .IsRequired()
+            .HasMaxLength(100);
+
+        builder.Property(x => x.HireDate)
+            .IsRequired();
+
+        builder.Property(x => x.PhoneNumber)
+            .HasMaxLength(20);
+
+        builder.Property(x => x.Cpf)
+            .IsRequired()
+            .HasMaxLength(14);
+
+        builder.Property(x => x.LastPasswordChange)
+            .IsRequired();
     }
 }

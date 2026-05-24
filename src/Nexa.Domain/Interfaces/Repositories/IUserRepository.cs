@@ -6,4 +6,5 @@ namespace Nexa.Domain.Interfaces.Repositories;
 public interface IUserRepository : IBaseRepository<User>
 {
     Task<User?> GetByEmail(string email, CancellationToken cancellationToken = default);
+    Task<User?> GetByCpf(string cpf, CancellationToken cancellationToken = default);
 }
