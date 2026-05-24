@@ -24,6 +24,30 @@ public class UserController : BaseController<User, IUserService, UserDto, Create
         return base.Create(dto, cancellationToken);
     }
 
+    [HttpGet("me")]
+    public async Task<IActionResult> GetMe(CancellationToken cancellationToken)
+    {
+        if (!_currentUser.Id.HasValue)
+            return Unauthorized();
+
+        var result = await _service.GetByIdAsync(_currentUser.Id.Value, cancellationToken);
+        return result.Match(
+            entity => Ok(MapToDto(entity)),
+            HandleErrors);
+    }
+
+    [HttpPut("me")]
+    public async Task<IActionResult> UpdateMe(UpdateUserDto dto, CancellationToken cancellationToken)
+    {
+        if (!_currentUser.Id.HasValue)
+            return Unauthorized();
+
+        var result = await _service.UpdateAsync(_currentUser.Id.Value, dto, cancellationToken);
+        return result.Match(
+            _ => NoContent(),
+            HandleErrors);
+    }
+
     [HttpPut("change-password")]
     public async Task<IActionResult> ChangePassword(ChangePasswordDto dto, CancellationToken cancellationToken)
     {
