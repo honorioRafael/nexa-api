@@ -19,6 +19,7 @@ public class AppDbContext : DbContext
     public DbSet<VehicleTrip> VehicleTrip => Set<VehicleTrip>();
     public DbSet<VehicleTripEmployee> VehicleTripEmployee => Set<VehicleTripEmployee>();
     public DbSet<VehicleTripStop> VehicleTripStop => Set<VehicleTripStop>();
+    public DbSet<Movement> Movement => Set<Movement>();
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

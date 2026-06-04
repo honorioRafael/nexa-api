@@ -3,6 +3,7 @@ using Nexa.Application.DTOs;
 using Nexa.Application.Interfaces.Services;
 using Nexa.Application.Services.Base;
 using Nexa.Domain.Entities;
+using Nexa.Domain.Enums;
 using Nexa.Domain.Interfaces.Repositories;
 
 namespace Nexa.Application.Services;
@@ -13,18 +14,24 @@ public class VehicleTripService : BaseService<VehicleTrip, IVehicleTripRepositor
     private readonly IDriverRepository _driverRepository;
     private readonly IVehicleRepository _vehicleRepository;
     private readonly IAddressRepository _addressRepository;
+    private readonly IVehicleModelRepository _vehicleModelRepository;
+    private readonly IMovementRepository _movementRepository;
 
     public VehicleTripService(
         IVehicleTripRepository repository, 
         IHousingRepository housingRepository,
         IDriverRepository driverRepository,
         IVehicleRepository vehicleRepository,
-        IAddressRepository addressRepository) : base(repository)
+        IAddressRepository addressRepository,
+        IVehicleModelRepository vehicleModelRepository,
+        IMovementRepository movementRepository) : base(repository)
     {
         _housingRepository = housingRepository;
         _driverRepository = driverRepository;
         _vehicleRepository = vehicleRepository;
         _addressRepository = addressRepository;
+        _vehicleModelRepository = vehicleModelRepository;
+        _movementRepository = movementRepository;
     }
 
     public override async Task<ErrorOr<Success>> OnEntityCreating(CreateVehicleTripDto createDto, CancellationToken cancellationToken = default)
@@ -70,5 +77,89 @@ public class VehicleTripService : BaseService<VehicleTrip, IVehicleTripRepositor
 
         var entities = await _repository.GetByAddressIdAsync(housing.AddressId, cancellationToken);
         return entities.Select(e => (VehicleTripDto)e!).ToList();
+    }
+
+    public override async Task<ErrorOr<VehicleTrip>> CreateAsync(CreateVehicleTripDto dto, CancellationToken cancellationToken = default)
+    {
+        var result = await base.CreateAsync(dto, cancellationToken);
+        if (result.IsError) return result.Errors;
+
+        var trip = result.Value;
+
+        if (trip.Status == VehicleTripStatus.InProgress)
+        {
+            var vehicleDesc = await GetVehicleDescriptionAsync(trip.VehicleId, cancellationToken);
+            await _movementRepository.CreateAsync(new Movement
+            {
+                Type = MovementType.VehicleTripStarted,
+                Title = "Viagem iniciada",
+                Description = $"Veículo <b>{vehicleDesc}</b> iniciou a viagem",
+                StatusLabel = "Em andamento",
+                CreatedAt = DateTime.UtcNow,
+                VehicleId = trip.VehicleId
+            }, cancellationToken);
+            await _movementRepository.SaveChangesAsync(cancellationToken);
+        }
+
+        return trip;
+    }
+
+    public override async Task<ErrorOr<VehicleTrip>> UpdateAsync(long id, UpdateVehicleTripDto dto, CancellationToken cancellationToken = default)
+    {
+        var existingTrip = await _repository.GetByIdAsync(id, cancellationToken);
+        if (existingTrip is null)
+            return Error.NotFound(description: $"VehicleTrip com Id {id} não encontrado(a).");
+
+        var oldStatus = existingTrip.Status;
+
+        var result = await base.UpdateAsync(id, dto, cancellationToken);
+        if (result.IsError) return result.Errors;
+
+        var updatedTrip = result.Value;
+
+        if (oldStatus != updatedTrip.Status)
+        {
+            if (updatedTrip.Status == VehicleTripStatus.InProgress)
+            {
+                var vehicleDesc = await GetVehicleDescriptionAsync(updatedTrip.VehicleId, cancellationToken);
+                await _movementRepository.CreateAsync(new Movement
+                {
+                    Type = MovementType.VehicleTripStarted,
+                    Title = "Viagem iniciada",
+                    Description = $"Veículo <b>{vehicleDesc}</b> iniciou a viagem",
+                    StatusLabel = "Em andamento",
+                    CreatedAt = DateTime.UtcNow,
+                    VehicleId = updatedTrip.VehicleId
+                }, cancellationToken);
+                await _movementRepository.SaveChangesAsync(cancellationToken);
+            }
+            else if (updatedTrip.Status == VehicleTripStatus.Completed)
+            {
+                var vehicleDesc = await GetVehicleDescriptionAsync(updatedTrip.VehicleId, cancellationToken);
+                await _movementRepository.CreateAsync(new Movement
+                {
+                    Type = MovementType.VehicleTripCompleted,
+                    Title = "Viagem Finalizada",
+                    Description = $"Veículo <b>{vehicleDesc}</b> finalizou a viagem",
+                    StatusLabel = "Concluída",
+                    CreatedAt = DateTime.UtcNow,
+                    VehicleId = updatedTrip.VehicleId
+                }, cancellationToken);
+                await _movementRepository.SaveChangesAsync(cancellationToken);
+            }
+        }
+
+        return updatedTrip;
+    }
+
+    private async Task<string> GetVehicleDescriptionAsync(long vehicleId, CancellationToken cancellationToken)
+    {
+        var vehicle = await _vehicleRepository.GetByIdAsync(vehicleId, cancellationToken);
+        if (vehicle == null) return "Veículo Desconhecido";
+
+        var model = await _vehicleModelRepository.GetByIdAsync(vehicle.VehicleModelId, cancellationToken);
+        var modelName = model?.Model ?? "Modelo Desconhecido";
+
+        return $"{vehicle.LicensePlate} ({modelName})";
     }
 }

@@ -65,6 +65,7 @@ public static class DependencyInjection
         services.AddScoped<IHousingRoomRepository, HousingRoomRepository>();
         services.AddScoped<IVehicleTripEmployeeRepository, VehicleTripEmployeeRepository>();
         services.AddScoped<IVehicleTripStopRepository, VehicleTripStopRepository>();
+        services.AddScoped<IMovementRepository, MovementRepository>();
 
         return services;
     }

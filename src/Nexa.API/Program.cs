@@ -51,6 +51,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+if (args.Contains("--seed"))
+{
+    await Nexa.API.DatabaseSeeder.SeedAsync(app.Services);
+    Console.WriteLine("Database seeding completed successfully!");
+    return;
+}
+
 app.UseCors("AllowAll");
 
 app.UseMiddleware<GlobalExceptionMiddleware>();
