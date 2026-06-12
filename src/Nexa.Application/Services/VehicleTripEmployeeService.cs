@@ -33,4 +33,21 @@ public class VehicleTripEmployeeService : BaseService<VehicleTripEmployee, IVehi
 
         return Result.Success;
     }
+
+    public override async Task<ErrorOr<Success>> OnEntityUpdating(long id, UpdateVehicleTripEmployeeDto updateDto, CancellationToken cancellationToken = default)
+    {
+        var existing = await _repository.GetByIdAsync(id, cancellationToken);
+        if (existing == null)
+            return Error.NotFound(description: "VehicleTripEmployee não encontrado.");
+
+        var vehicleTrip = await _vehicleTripRepository.GetByIdAsync(updateDto.VehicleTripId, cancellationToken);
+        if (vehicleTrip == null)
+            return Error.NotFound(description: "VehicleTrip não encontrado.");
+
+        var employee = await _employeeRepository.GetByIdAsync(updateDto.EmployeeId, cancellationToken);
+        if (employee == null)
+            return Error.NotFound(description: "Employee não encontrado.");
+
+        return Result.Success;
+    }
 }

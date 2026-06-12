@@ -10,13 +10,20 @@ public class DashboardService(
     IVehicleRepository vehicleRepository,
     IVehicleTripRepository vehicleTripRepository) : IDashboardService
 {
+    private static DateTime EnsureUtc(DateTime dt)
+    {
+        return dt.Kind == DateTimeKind.Unspecified
+            ? DateTime.SpecifyKind(dt, DateTimeKind.Utc)
+            : dt.ToUniversalTime();
+    }
+
     public async Task<List<OccupancyEvolutionDto>> GetOccupancyEvolutionAsync(
         DateTime? startDate = null,
         DateTime? endDate = null,
         CancellationToken cancellationToken = default)
     {
-        var end = endDate ?? DateTime.UtcNow;
-        var start = startDate ?? end.AddDays(-30);
+        var end = endDate.HasValue ? EnsureUtc(endDate.Value) : DateTime.UtcNow;
+        var start = startDate.HasValue ? EnsureUtc(startDate.Value) : end.AddDays(-30);
 
         var allocations = await housingAllocationRepository.GetAllocationsInPeriodAsync(start, end, cancellationToken);
         var maxCapacity = await housingRepository.GetMaxCapacityAsync(cancellationToken);
@@ -51,8 +58,11 @@ public class DashboardService(
         DateTime? endDate = null,
         CancellationToken cancellationToken = default)
     {
-        var topVehicles = await vehicleRepository.GetTopUtilizedVehiclesAsync(5, startDate, endDate, cancellationToken);
-        var totalTrips = await vehicleTripRepository.GetTotalTripsCountAsync(startDate, endDate, cancellationToken);
+        var startUtc = startDate.HasValue ? EnsureUtc(startDate.Value) : (DateTime?)null;
+        var endUtc = endDate.HasValue ? EnsureUtc(endDate.Value) : (DateTime?)null;
+
+        var topVehicles = await vehicleRepository.GetTopUtilizedVehiclesAsync(5, startUtc, endUtc, cancellationToken);
+        var totalTrips = await vehicleTripRepository.GetTotalTripsCountAsync(startUtc, endUtc, cancellationToken);
 
         return topVehicles.Select(tv =>
         {
