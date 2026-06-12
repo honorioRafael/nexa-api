@@ -15,5 +15,8 @@ public class UpdateVehicleValidator : AbstractValidator<UpdateVehicleDto>
 
         RuleFor(x => x.VehicleCondition)
             .IsInEnum().WithMessage("A Condição do Veículo informada é inválida.");
+
+        RuleFor(x => x.Status)
+            .IsInEnum().WithMessage("O Status do Veículo informado é inválido.");
     }
 }

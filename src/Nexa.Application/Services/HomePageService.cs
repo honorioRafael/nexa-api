@@ -1,6 +1,7 @@
 using Nexa.Application.DTOs;
 using Nexa.Application.Interfaces.Services;
 using Nexa.Domain.Interfaces.Repositories;
+using Nexa.Domain.Models;
 
 namespace Nexa.Application.Services;
 
@@ -23,11 +24,16 @@ public class HomePageService(
         var employeesDto = new HomePageEmployeesDto(totalEmployees, activeEmployees, activeRate);
 
         // Vehicles
-        var (totalVehicles, availableVehicles) = await vehicleRepository.GetHomePageData(cancellationToken);
-        int availabilityRate = totalVehicles == 0
+        var vehicleStats = await vehicleRepository.GetHomePageData(cancellationToken);
+        int availabilityRate = vehicleStats.Total == 0
             ? 0
-            : (int)((double)availableVehicles / totalVehicles * 100);
-        var vehicleDto = new HomePageVehiclesDto(totalVehicles, availableVehicles, availabilityRate);
+            : (int)((double)vehicleStats.Available / vehicleStats.Total * 100);
+        var vehicleDto = new HomePageVehiclesDto(
+            vehicleStats.Total,
+            vehicleStats.Available,
+            vehicleStats.InUse,
+            vehicleStats.Maintenance,
+            availabilityRate);
 
         // Housing — capacidade máxima do repositório; ocupação atual calculada via alocações
         var maxHousingCapacity = await housingRepository.GetMaxCapacityAsync(cancellationToken);

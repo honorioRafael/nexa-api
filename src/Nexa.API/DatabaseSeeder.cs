@@ -68,7 +68,8 @@ public static class DatabaseSeeder
             vehicles = new List<Vehicle>
             {
                 new() { LicensePlate = "LWUW-7M3", VehicleModelId = vehicleModel1.Id, ChassisNumber = "12345678901234567", Mileage = 15000, Status = VehicleStatus.Available, VehicleCondition = VehicleCondition.New },
-                new() { LicensePlate = "KYDJ-3J2", VehicleModelId = vehicleModel2.Id, ChassisNumber = "98765432109876543", Mileage = 5000, Status = VehicleStatus.Available, VehicleCondition = VehicleCondition.New }
+                new() { LicensePlate = "KYDJ-3J2", VehicleModelId = vehicleModel2.Id, ChassisNumber = "98765432109876543", Mileage = 5000, Status = VehicleStatus.Available, VehicleCondition = VehicleCondition.New },
+                new() { LicensePlate = "ABC-1234", VehicleModelId = vehicleModel2.Id, ChassisNumber = "11111111111111111", Mileage = 80000, Status = VehicleStatus.Maintenance, VehicleCondition = VehicleCondition.PreOwned }
             };
             await context.Vehicle.AddRangeAsync(vehicles);
             await context.SaveChangesAsync();

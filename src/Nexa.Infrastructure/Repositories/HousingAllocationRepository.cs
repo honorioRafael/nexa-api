@@ -66,4 +66,12 @@ public class HousingAllocationRepository : BaseRepository<HousingAllocation>, IH
                     >= h.MaxCapacity,
                 cancellationToken);
     }
+
+    public async Task<List<HousingAllocation>> GetAllocationsInPeriodAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .Where(x => x.CheckInDate <= endDate && (x.CheckOutDate == null || x.CheckOutDate >= startDate))
+            .ToListAsync(cancellationToken);
+    }
 }

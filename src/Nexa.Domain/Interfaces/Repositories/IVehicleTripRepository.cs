@@ -7,4 +7,5 @@ public interface IVehicleTripRepository : IBaseRepository<VehicleTrip>
 {
     Task<VehicleTrip?> GetLastByVehicleIdAsync(long vehicleId, CancellationToken cancellationToken = default);
     Task<List<VehicleTrip>> GetByAddressIdAsync(long addressId, CancellationToken cancellationToken = default);
+    Task<int> GetTotalTripsCountAsync(DateTime? startDate = null, DateTime? endDate = null, CancellationToken cancellationToken = default);
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Nexa.Domain.Entities;
 using Nexa.Domain.Enums;
 using Nexa.Domain.Interfaces.Repositories;
+using Nexa.Domain.Models;
 using Nexa.Infrastructure.Persistence;
 using Nexa.Infrastructure.Repositories.Base;
 
@@ -19,12 +20,51 @@ public class VehicleRepository : BaseRepository<Vehicle>, IVehicleRepository
             .ToListAsync(cancellationToken);
     }
 
-    public async Task<(int TotalVehicles, int AvailableVehicles)> GetHomePageData(CancellationToken cancellationToken = default)
+    public async Task<HomePageVehicleStats> GetHomePageData(CancellationToken cancellationToken = default)
     {
-        var totalVehicles = await _dbSet.AsNoTracking().CountAsync(cancellationToken);
-        var availableVehicles = await _dbSet.AsNoTracking().CountAsync(x => x.Status == VehicleStatus.Available, cancellationToken);
-        
-        return (totalVehicles, availableVehicles);
+        var stats = await _dbSet
+            .AsNoTracking()
+            .GroupBy(x => 1)
+            .Select(g => new
+            {
+                Total = g.Count(),
+                Available = g.Count(x => x.Status == VehicleStatus.Available),
+                InUse = g.Count(x => x.Status == VehicleStatus.InUse),
+                Maintenance = g.Count(x => x.Status == VehicleStatus.Maintenance)
+            })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (stats == null)
+        {
+            return new HomePageVehicleStats(0, 0, 0, 0);
+        }
+
+        return new HomePageVehicleStats(stats.Total, stats.Available, stats.InUse, stats.Maintenance);
+    }
+
+    public async Task<List<VehicleTripCount>> GetTopUtilizedVehiclesAsync(
+        int limit,
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _dbSet.AsNoTracking().Include(v => v.VehicleModel);
+
+        var projectedQuery = query.Select(v => new
+        {
+            Vehicle = v,
+            TripCount = _context.VehicleTrip.Count(t =>
+                t.VehicleId == v.Id &&
+                (!startDate.HasValue || t.StartDate >= startDate.Value) &&
+                (!endDate.HasValue || t.StartDate <= endDate.Value))
+        });
+
+        var list = await projectedQuery
+            .OrderByDescending(x => x.TripCount)
+            .Take(limit)
+            .ToListAsync(cancellationToken);
+
+        return list.Select(x => new VehicleTripCount(x.Vehicle, x.TripCount)).ToList();
     }
 
     public Task<Vehicle?> GetByLicensePlateAsync(string licensePlate, CancellationToken cancellationToken = default)

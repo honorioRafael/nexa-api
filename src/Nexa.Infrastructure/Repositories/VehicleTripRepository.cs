@@ -36,4 +36,17 @@ public class VehicleTripRepository : BaseRepository<VehicleTrip>, IVehicleTripRe
                 .ThenInclude(vte => vte.Employee)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<int> GetTotalTripsCountAsync(
+        DateTime? startDate = null,
+        DateTime? endDate = null,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbSet
+            .AsNoTracking()
+            .CountAsync(t =>
+                (!startDate.HasValue || t.StartDate >= startDate.Value) &&
+                (!endDate.HasValue || t.StartDate <= endDate.Value),
+                cancellationToken);
+    }
 }

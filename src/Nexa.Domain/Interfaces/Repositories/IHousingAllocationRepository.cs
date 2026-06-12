@@ -10,4 +10,5 @@ public interface IHousingAllocationRepository : IBaseRepository<HousingAllocatio
     Task<int> GetCurrentOccupancyByHousingIdAsync(long housingId, CancellationToken cancellationToken = default);
     Task<int> GetTotalCurrentOccupancyAsync(CancellationToken cancellationToken = default);
     Task<int> GetFullHousingsCount(CancellationToken cancellationToken = default);
+    Task<List<HousingAllocation>> GetAllocationsInPeriodAsync(DateTime startDate, DateTime endDate, CancellationToken cancellationToken = default);
 }

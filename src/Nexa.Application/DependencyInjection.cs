@@ -16,6 +16,7 @@ public static class DependencyInjection
         // Services
         services.AddScoped<IAuthenticateService, AuthenticateService>();
         services.AddScoped<IHomePageService, HomePageService>();
+        services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IHousingService, HousingService>();
