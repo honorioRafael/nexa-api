@@ -13,16 +13,19 @@ public class HousingAllocationService : BaseService<HousingAllocation, IHousingA
     private readonly IEmployeeRepository _employeeRepository;
     private readonly IHousingRepository _housingRepository;
     private readonly IMovementRepository _movementRepository;
+    private readonly IHousingRoomRepository _housingRoomRepository;
 
     public HousingAllocationService(
         IHousingAllocationRepository repository,
         IEmployeeRepository employeeRepository,
         IHousingRepository housingRepository,
-        IMovementRepository movementRepository) : base(repository)
+        IMovementRepository movementRepository,
+        IHousingRoomRepository housingRoomRepository) : base(repository)
     {
         _employeeRepository = employeeRepository;
         _housingRepository = housingRepository;
         _movementRepository = movementRepository;
+        _housingRoomRepository = housingRoomRepository;
     }
 
     public override async Task<ErrorOr<Success>> OnEntityCreating(CreateHousingAllocationDto createDto, CancellationToken cancellationToken = default)
@@ -37,6 +40,16 @@ public class HousingAllocationService : BaseService<HousingAllocation, IHousingA
 
         if (housing.UseHousingRoom && (!createDto.HousingRoomId.HasValue || createDto.HousingRoomId <= 0))
             return Error.Validation(description: "HousingRoomId é obrigatório quando o Housing utiliza quartos.");
+
+        if (createDto.HousingRoomId.HasValue && createDto.HousingRoomId.Value > 0)
+        {
+            var housingRoom = await _housingRoomRepository.GetByIdAsync(createDto.HousingRoomId.Value, cancellationToken);
+            if (housingRoom == null)
+                return Error.NotFound(description: "Quarto não encontrado.");
+
+            if (housingRoom.HousingId != createDto.HousingId)
+                return Error.Validation(description: "O quarto informado não pertence ao alojamento selecionado.");
+        }
 
         return Result.Success;
     }
@@ -53,6 +66,16 @@ public class HousingAllocationService : BaseService<HousingAllocation, IHousingA
 
         if (housing.UseHousingRoom && (!updateDto.HousingRoomId.HasValue || updateDto.HousingRoomId <= 0))
             return Error.Validation(description: "HousingRoomId é obrigatório quando o Housing utiliza quartos.");
+
+        if (updateDto.HousingRoomId.HasValue && updateDto.HousingRoomId.Value > 0)
+        {
+            var housingRoom = await _housingRoomRepository.GetByIdAsync(updateDto.HousingRoomId.Value, cancellationToken);
+            if (housingRoom == null)
+                return Error.NotFound(description: "Quarto não encontrado.");
+
+            if (housingRoom.HousingId != existingAllocation.HousingId)
+                return Error.Validation(description: "O quarto informado não pertence ao alojamento selecionado.");
+        }
 
         if (updateDto.CheckOutDate.HasValue && existingAllocation.CheckInDate > updateDto.CheckOutDate.Value)
             return Error.Validation(description: "A data de check-out deve ser maior ou igual à data de check-in.");
