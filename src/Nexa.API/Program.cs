@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen(c =>
     {
         Title = "Nexa API",
         Version = "v1",
-        Description = "API para o sistema Nexa - Gestão de Frota, Dashboard de Veículos e Ocupação."
+        Description = "Nexa - Gestão de Frota, Dashboard de Veículos e Ocupação."
     });
 
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
